@@ -1,6 +1,8 @@
 import sequelize from "@src/config/database";
 import User from "@src/models/user.model";
 import Profile from "@src/models/profile.model";
+import Post from "@src/models/post.model";
+import UserGroup from "@src/models/user-group.model";
 /**
  * Should exports entities to here to init new object model postgres.
  */
@@ -15,4 +17,4 @@ const initDb = async () => {
   }
 };
 
-export { sequelize, initDb, User, Profile };
+export { sequelize, initDb, User, Profile, Post, UserGroup };

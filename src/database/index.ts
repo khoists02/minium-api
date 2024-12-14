@@ -1,3 +1,6 @@
+/**
+ * Init Database schemas.
+ */
 import sequelize from "@src/config/database";
 import User from "@src/models/user.model";
 import Profile from "@src/models/profile.model";

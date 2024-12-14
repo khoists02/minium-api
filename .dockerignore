@@ -1,0 +1,9 @@
+node_modules
+dist
+*.env
+*.log
+.dockerignore
+.eslintignore
+.eslintrc.js
+.prettierignore
+.prettierrc

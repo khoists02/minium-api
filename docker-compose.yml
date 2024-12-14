@@ -30,5 +30,14 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
 
+  flyway:
+    image: flyway/flyway:latest
+    container_name: flyway_container
+    depends_on:
+      - postgres
+    command: -url=jdbc:postgresql://postgres:5432/node_db -user=postgres -password=postgres -locations=filesystem:/flyway/sql migrate
+    volumes:
+      - ./migrations:/flyway/sql
+
 volumes:
   pg_data:

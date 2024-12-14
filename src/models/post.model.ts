@@ -7,17 +7,17 @@ import sequelize from "@src/config/database";
 import User from "@src/models/user.model";
 
 class Post extends Model {
-    public id!: number;
+    public id!: string;
     public title!: string;
     public content!: string;
-    public userId!: number;
+    public userId!: string;
 }
 
 Post.init(
     {
         id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4, // Automatically generates a UUID
             primaryKey: true,
         },
         title: {

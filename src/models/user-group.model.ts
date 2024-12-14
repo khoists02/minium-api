@@ -4,18 +4,18 @@ import User from "./user.model";
 import Group from "./group.model";
 
 class UserGroup extends Model {
-  public userId!: number;
-  public groupId!: number;
+  public userId!: string;
+  public groupId!: string;
 }
 
 UserGroup.init(
   {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
     },
     groupId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
     },
   },

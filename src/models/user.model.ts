@@ -32,6 +32,12 @@ class User extends Model {
     {
       sequelize,
       tableName: "users",
+      indexes: [
+        {
+          unique: true,
+          fields: ["name", "email"]
+        }
+      ]
     },
   );
   

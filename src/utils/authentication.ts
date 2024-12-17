@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { Response } from "express";
 
 const JWT_SECRET = "22-07-1993"; // Replace with a strong, secure key in production
 
@@ -26,3 +27,14 @@ export const generateToken = (payload: object, expiresIn: string = "1h"): string
 export const verifyToken = (token: string): object | string => {
     return jwt.verify(token, JWT_SECRET);
 };
+
+// Function to set token in a cookie
+export const setTokenCookie = (res: Response, token: string) => {
+    // Set cookie with HTTPOnly and Secure flags
+    res.cookie('token', token, {
+      httpOnly: true, // Prevent JavaScript access
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      sameSite: 'strict', // Prevent CSRF attacks
+      maxAge: 3600000, // 1 hour
+    });
+  };

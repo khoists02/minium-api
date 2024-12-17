@@ -16,6 +16,10 @@ COPY . .
 # Build the TypeScript code
 RUN npm run build
 
+
+# Install nodemon globally
+RUN npm install -g nodemon
+
 # Expose the application port
 EXPOSE 3000
 

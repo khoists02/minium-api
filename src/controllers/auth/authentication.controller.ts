@@ -1,12 +1,14 @@
 import User from "@src/models/user.model";
 import { Request, Response } from "express";
-import { isValidPassword, generateToken } from "@src/utils/authentication";
+import { isValidPassword, generateToken, hashPassword, setTokenCookie } from "@src/utils/authentication";
+import { UniqueConstraintError } from "sequelize";
 
 export const register = async (req: Request, res: Response) => {
     try {
         const body = req.body;
-        const user = await User.create(body);
-        res.status(2021).json({ username: user.name })
+        const decrypted = await hashPassword(body.password);
+        const user = await User.create({...body, password: decrypted});
+        res.status(201).json({ username: user.name })
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -29,11 +31,21 @@ export const login =  async (req: Request, res: Response) => {
 
 
         const token = generateToken({ id: foundUser?.id, username: foundUser?.email });
-
+        // TODO: set cookies to every request headers.
+        setTokenCookie(res, token);
         res.status(200).json({ token })
 
     } catch (error) {
-        console.error(error);
+        console.error((error as UniqueConstraintError)?.message);
+
+        if (error instanceof UniqueConstraintError) {
+            res.status(400).json({ message: (error as UniqueConstraintError).message });
+        }
         res.status(500).json({ error: "Internal Server Error" });
     }
+}
+
+export const logout = async (req: Request, res: Response) => {
+    res.clearCookie('token');
+    res.json({ message: 'Logged out successfully' });
 }

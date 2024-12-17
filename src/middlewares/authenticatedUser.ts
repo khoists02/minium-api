@@ -1,20 +1,19 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "@src/utils/authentication";
 
-// Middleware to protect routes
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
-
+// Middleware to validate JWT from cookies
+export const validateToken = (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies?.token; // Extract token from cookies
+  
     if (!token) {
-        return res.status(401).json({ error: "Access token is missing" });
+      return res.status(401).json({ message: 'Unauthorized: No token provided' });
     }
-
+  
     try {
-        const user = verifyToken(token);
-        (req as any).user = user; // Attach user info to request object
-        next();
-    } catch (error) {
-        return res.status(403).json({ error: "Invalid or expired token" });
+      const decoded = verifyToken(token);
+      (req as any).user = decoded; // Attach decoded payload to request
+      next();
+    } catch (err) {
+      return res.status(401).json({ message: 'Unauthorized: Invalid token' });
     }
-};
+  };

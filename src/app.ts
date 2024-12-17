@@ -1,11 +1,12 @@
 import express, { NextFunction } from "express";
-import userRoutes from "@src/routes/user.router";
 import corsConfig from "@src/config/cors";
 import appConfig from "@src/config/app";
 import { initDb } from "@src/database/index";
 import helmet from "helmet";
 import { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
+import userRoutes from "@src/routes/user.router";
+import authRoutes from "@src/routes/auth.router";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use(corsConfig);
 
 // Init Routes
 app.use("/api", userRoutes);
+app.use("/api", authRoutes);
 
 // Middleware: Handle Not Found Routes
 app.use((req: Request, res: Response) => {

@@ -30,15 +30,17 @@ app.use(helmet({
 // Middlewares
 app.use(express.json());
 
-// Apply rate limiting to all requests
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
+app.use("/uploads", express.static("uploads")); // Serve uploaded images statically
 
-app.use(limiter);
+// TODO: Apply rate limiting to all requests
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100, // Limit each IP to 100 requests per `window` (15 minutes)
+//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+// });
+
+// app.use(limiter);
 
 // CORS middleware
 app.use(corsConfig);
@@ -52,11 +54,11 @@ app.use("/api", validateToken, userRoutes);
 
 // Middleware: Handle Not Found Routes
 app.use((req: Request, res: Response) => {
-    res.status(404).json({ error: 'Route not found' });
+    res.status(404).json({ error: "Not Found" });
   });
 
 // Middleware: Global Error Handler
-// Centralized Error Handling Middleware
+// TODO: Centralized Error Handling Middleware
 // @ts-ignore
 // app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 //   console.error(`[Error]: ${err.message}`); // Log the error (optional)

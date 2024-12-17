@@ -24,7 +24,7 @@ Profile.init(
         allowNull: true,
       },
       userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
       },
     },

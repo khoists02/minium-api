@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Response } from "express";
+import { Response, Request } from "express";
 
 const JWT_SECRET = "22-07-1993"; // Replace with a strong, secure key in production
 
@@ -38,3 +38,5 @@ export const setTokenCookie = (res: Response, token: string) => {
       maxAge: 3600000, // 1 hour
     });
   };
+
+  export const getUserId = (req: Request) => (req as any)?.user?.id;

@@ -4,7 +4,7 @@ services:
     build:
       context: .
     ports:
-      - "4000:3000"
+      - "8080:3000"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

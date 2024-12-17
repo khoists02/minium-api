@@ -7,6 +7,9 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Copy the types folder into the container
+COPY /src/types /app/types
+
 # Install dependencies
 RUN npm install
 

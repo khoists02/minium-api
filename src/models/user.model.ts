@@ -1,8 +1,18 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 
 import sequelize from "@src/config/database";
 
-class User extends Model {
+// Define Post attributes
+interface UserAttributes {
+  id: string;
+  name: string;
+  email: string;
+  password: string; // Foreign key to User
+}
+
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+
+class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public id!: string;
     public name!: string;
     public email!: string;

@@ -1,12 +1,22 @@
 /**
- * one to many relationship example
+ * one to many relationship example, ONE USER - MANY POST. ONE POST => 1 USER.
  */
 
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "@src/config/database";
 import User from "@src/models/user.model";
 
-class Post extends Model {
+// Define Post attributes
+interface PostAttributes {
+    id: string;
+    title: string;
+    content: string;
+    userId: string; // Foreign key to User
+}
+  
+interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
+
+class Post extends Model<PostAttributes, PostCreationAttributes> implements PostAttributes {
     public id!: string;
     public title!: string;
     public content!: string;
@@ -29,7 +39,7 @@ Post.init(
             allowNull: false,
         },
         userId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
         },
     },
@@ -43,10 +53,11 @@ Post.init(
 User.hasMany(Post, {
     foreignKey: "userId",
     as: "posts",
-  });
-  Post.belongsTo(User, {
+});
+
+Post.belongsTo(User, {
     foreignKey: "userId",
     as: "user",
-  });
+});
   
-  export default Post;
+export default Post;

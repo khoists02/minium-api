@@ -4,11 +4,10 @@ import appConfig from "@src/config/app";
 import { initDb } from "@src/database/index";
 import helmet from "helmet";
 import { Request, Response } from "express";
-import rateLimit from "express-rate-limit";
-import userRoutes from "@src/routes/user.router";
-import authRoutes from "@src/routes/auth.router";
+// import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { validateToken } from "@src/middlewares/authenticatedUser";
+import { postRouter, userRouter, authRouter } from "@src/routes";
 
 
 const app = express();
@@ -46,16 +45,18 @@ app.use("/uploads", express.static("uploads")); // Serve uploaded images statica
 app.use(corsConfig);
 app.use(cookieParser());
 
-app.use("/api", authRoutes);
+app.use("/api", authRouter);
 
 // Init Routes
 // @ts-ignore
-app.use("/api", validateToken, userRoutes);
+app.use("/api", validateToken, userRouter);
+// @ts-ignore
+app.use("/api", validateToken, postRouter);
 
 // Middleware: Handle Not Found Routes
 app.use((req: Request, res: Response) => {
     res.status(404).json({ error: "Not Found" });
-  });
+});
 
 // Middleware: Global Error Handler
 // TODO: Centralized Error Handling Middleware

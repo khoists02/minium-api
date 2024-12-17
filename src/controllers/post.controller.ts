@@ -113,9 +113,11 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
     try {
         const { title, userId } = req.query;
 
+        if (!userId) res.status(404).json({ message: "User not found." });
+
         const foundUser  = await User.findByPk(userId as string);
 
-        if (!foundUser) res.status(404).json({ message: "User not found." })
+        if (!foundUser) res.status(404).json({ message: "User not found." });
 
         const whereConditions: any = {};
 

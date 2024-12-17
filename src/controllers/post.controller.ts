@@ -83,6 +83,7 @@ export const getAllPost = async (req: Request, res: Response) => {
                 as: "user",
                 attributes: ["id"]
             }],
+            where: whereConditions,
             offset: skip,
             limit: limit,
         });
@@ -112,6 +113,10 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
     try {
         const { title, userId } = req.query;
 
+        const foundUser  = await User.findByPk(userId as string);
+
+        if (!foundUser) res.status(404).json({ message: "User not found." })
+
         const whereConditions: any = {};
 
         if (title) {
@@ -132,6 +137,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
                 as: "user",
                 attributes: ["id"]
             }],
+            where: whereConditions,
             offset: skip,
             limit: limit,
         });

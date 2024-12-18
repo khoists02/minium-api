@@ -63,6 +63,11 @@ export const deletePost = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * Get all posts
+ * @param req 
+ * @param res 
+ */
 export const getAllPost = async (req: Request, res: Response) => {
     try {
         const { title } = req.query;
@@ -107,11 +112,40 @@ export const getAllPost = async (req: Request, res: Response) => {
         res.status(500).json({ message: (error as any)?.message });
     }
 }
+/**
+ * Get Post details include user.
+ * @param req 
+ * @param res 
+ */
+export const getPostDetails = async (req: Request, res: Response) => {
+    try {
+        const { postId } = req.params;
 
+        const foundPost = await Post.findByPk(postId, {
+            include: [
+                {
+                    model: User,
+                    as: "user",
+                    attributes: ["id", "name", "email"]
+                }
+            ]
+        });
 
+        res.status(200).json({ post: foundPost })
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
+/**
+ * Get all post based on for each userId
+ * @param req 
+ * @param res 
+ */
 export const getAllPostByUserId = async (req: Request, res: Response) => {
     try {
-        const { title, userId } = req.query;
+        const { userId } = req.params;
+        const { title } = req.query;
 
         if (!userId) res.status(404).json({ message: "User not found." });
 

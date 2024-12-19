@@ -11,3 +11,12 @@ export interface IPostResponse {
     content?: string;
     userId?: string;
 }
+
+export interface ICommentResponse {
+    id?: string;
+    content?: string;
+    user?: {
+        id?: string;
+        name?: string;
+    }
+}

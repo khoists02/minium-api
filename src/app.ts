@@ -46,6 +46,7 @@ app.use(corsConfig);
 app.use(cookieParser());
 
 app.use("/api", authRouter);
+app.use("/api", publicRouter);
 
 // Init Routes
 // @ts-ignore
@@ -54,7 +55,6 @@ app.use("/api", validateToken, userRouter);
 app.use("/api", validateToken, postRouter);
 // @ts-ignore
 app.use("/api", validateToken, commentRouter);
-app.use("/api", publicRouter);
 // Middleware: Handle Not Found Routes
 app.use((req: Request, res: Response) => {
   res.status(404).json({ error: "Not Found" });

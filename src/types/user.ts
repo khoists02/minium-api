@@ -15,7 +15,7 @@ export interface IPostResponse {
 export interface ICommentResponse {
     id?: string;
     content?: string;
-    user?: {
+    author?: {
         id?: string;
         name?: string;
     }

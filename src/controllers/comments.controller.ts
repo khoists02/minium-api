@@ -44,6 +44,8 @@ export const updateComment = async (req: Request, res: Response) => {
 
         if (foundComment) {
             foundComment.content = content;
+            // Updated timestamp.
+            foundComment.updatedAt = new Date();
             await foundComment.save();
             res.status(200).json({ message: "Updated Comment Successfully." });
         } else {
@@ -86,7 +88,6 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
 
         const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems);
 
-
         const comments = await Comment.findAll({
             where: { postId },
             limit,
@@ -107,7 +108,7 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
                     id: cmt?.id,
                     content: cmt?.content,
                     // @ts-ignore
-                    user: cmt["user"]
+                    author: cmt["user"]
                 }
             }),
             totalItems,

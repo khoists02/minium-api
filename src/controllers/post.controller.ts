@@ -224,6 +224,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
                 attributes: ["id", "name"]
             }],
             where: whereConditions,
+            order: [["updatedAt", "ASC"]],
             offset: skip,
             limit: limit,
         });

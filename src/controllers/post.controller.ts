@@ -80,7 +80,7 @@ export const getAllPost = async (req: Request, res: Response) => {
 
         const totalItems = await Post.count({ where: whereConditions });
 
-        const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems); 
+        const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems);
 
         const allPost = await Post.findAll({
             include: [{
@@ -96,12 +96,12 @@ export const getAllPost = async (req: Request, res: Response) => {
         const response: PaginatedResponse<IPostResponse[]> = {
             content: allPost.map((u) => {
                 return {
-                        id: u?.id,
-                        title: u?.title,
-                        content: u?.content,
-                        userId: u?.userId
-                    }
-                }),
+                    id: u?.id,
+                    title: u?.title,
+                    content: u?.content,
+                    userId: u?.userId
+                }
+            }),
             totalItems,
             totalPages,
             currentPage: page,
@@ -149,7 +149,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
 
         if (!userId) res.status(404).json({ message: "User not found." });
 
-        const foundUser  = await User.findByPk(userId as string);
+        const foundUser = await User.findByPk(userId as string);
 
         if (!foundUser) res.status(404).json({ message: "User not found." });
 
@@ -165,7 +165,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
 
         const totalItems = await Post.count({ where: whereConditions });
 
-        const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems); 
+        const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems);
 
         const allPost = await Post.findAll({
             include: [{
@@ -181,12 +181,12 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
         const response: PaginatedResponse<IPostResponse[]> = {
             content: allPost.map((u) => {
                 return {
-                        id: u?.id,
-                        title: u?.title,
-                        content: u?.content,
-                        userId: u?.userId
-                    }
-                }),
+                    id: u?.id,
+                    title: u?.title,
+                    content: u?.content,
+                    userId: u?.userId
+                }
+            }),
             totalItems,
             totalPages,
             currentPage: page,

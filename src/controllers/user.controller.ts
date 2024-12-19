@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "@src/models/user.model";
 import { convertUserToResponse } from "@src/helpers/users/user.helper";
-import { calculatePagination, getPaginationFromRequest } from "@src/helpers/pagination";
+import { getPaginationFromRequest } from "@src/helpers/pagination";
 import { PaginatedResponse } from "@src/types/pagination";
 import { IUserResponse } from "@src/types/user";
 

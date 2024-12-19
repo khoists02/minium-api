@@ -15,6 +15,6 @@
     "allowJs": true,
     "types": ["node"] // Add this line
   },
-  "include": ["src/**/*", "src/types/**/*"], // Make sure the custom types folder is included
+  "include": ["src/**/*", "src/types/**/*", ".eslintrc.json",], // Make sure the custom types folder is included
   "exclude": ["node_modules", "dist"]
 }

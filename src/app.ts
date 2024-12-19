@@ -7,7 +7,7 @@ import { Request, Response } from "express";
 // import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { validateToken } from "@src/middlewares/authenticatedUser";
-import { postRouter, userRouter, authRouter } from "@src/routes";
+import { postRouter, userRouter, authRouter, commentRouter, publicRouter } from "@src/routes";
 
 
 const app = express();
@@ -18,9 +18,9 @@ app.use(helmet({
   contentSecurityPolicy: {
     useDefaults: true,
     directives: {
-        "default-src": ["'self'"],
-        "img-src": ["'self'", "https:"],
-        "script-src": ["'self'", "'unsafe-inline'"],
+      "default-src": ["'self'"],
+      "img-src": ["'self'", "https:"],
+      "script-src": ["'self'", "'unsafe-inline'"],
     },
   },
   crossOriginEmbedderPolicy: false, // Example: disable this for special use cases
@@ -52,10 +52,12 @@ app.use("/api", authRouter);
 app.use("/api", validateToken, userRouter);
 // @ts-ignore
 app.use("/api", validateToken, postRouter);
-
+// @ts-ignore
+app.use("/api", validateToken, commentRouter);
+app.use("/api", publicRouter);
 // Middleware: Handle Not Found Routes
 app.use((req: Request, res: Response) => {
-    res.status(404).json({ error: "Not Found" });
+  res.status(404).json({ error: "Not Found" });
 });
 
 // Middleware: Global Error Handler
@@ -73,7 +75,7 @@ app.use((req: Request, res: Response) => {
 //   res.status(500).json({ message: 'Internal Server Error', error: err.message });
 // });
 
-  
+
 
 // Initialize the database
 initDb();

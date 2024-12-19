@@ -12,6 +12,14 @@ export interface IPostResponse {
     userId?: string;
 }
 
+export interface IPublicPostResponse {
+    id?: string;
+    title?: string;
+    content?: string;
+    author?: string;
+    updatedAt?: Date | string;
+}
+
 export interface ICommentResponse {
     id?: string;
     content?: string;

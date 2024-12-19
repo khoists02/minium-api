@@ -2,7 +2,7 @@ import { getPaginationFromRequest } from "@src/helpers/pagination";
 import Post from "@src/models/post.model";
 import User from "@src/models/user.model";
 import { PaginatedResponse } from "@src/types/pagination";
-import { IPostResponse } from "@src/types/user";
+import { IPostResponse, IPublicPostResponse } from "@src/types/user";
 import { getUserId } from "@src/utils/authentication"
 import { Request, Response } from "express"
 import { Op } from "sequelize";
@@ -185,6 +185,58 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
                     title: u?.title,
                     content: u?.content,
                     userId: u?.userId
+                }
+            }),
+            totalItems,
+            totalPages,
+            currentPage: page,
+            pageSize: limit,
+        };
+        res.json(response);
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
+/**
+ * Public post
+ * @param req 
+ * @param res 
+ */
+export const getPublicPost = async (req: Request, res: Response) => {
+    try {
+        const { title } = req.query;
+
+        const whereConditions: any = {};
+
+        if (title) {
+            whereConditions.title = { [Op.like]: `%${title}%` }; // Partial match
+        }
+
+        const totalItems = await Post.count({ where: whereConditions });
+
+        const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems);
+
+        const allPost = await Post.findAll({
+            include: [{
+                model: User,
+                as: "user",
+                attributes: ["id", "name"]
+            }],
+            where: whereConditions,
+            offset: skip,
+            limit: limit,
+        });
+        // Prepare paginated response
+        const response: PaginatedResponse<IPublicPostResponse[]> = {
+            content: allPost.map((u) => {
+                return {
+                    id: u?.id,
+                    title: u?.title,
+                    content: u?.content,
+                    // @ts-ignore
+                    author: u ? u["user"]?.name : "",
+                    updatedAt: u.updatedAt,
                 }
             }),
             totalItems,

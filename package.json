@@ -37,6 +37,7 @@
     "nodemon": "^3.1.9",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
+    "react-quill": "^2.0.0",
     "sequelize": "^6.37.5",
     "sequelize-to-json": "^0.10.4",
     "tsconfig-paths": "^4.2.0"

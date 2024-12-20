@@ -99,6 +99,8 @@ export const getAllPost = async (req: Request, res: Response) => {
                     id: u?.id,
                     title: u?.title,
                     content: u?.content,
+                    description: u?.description,
+                    backgroundUrl: u?.backgroundUrl,
                     userId: u?.userId
                 }
             }),
@@ -130,8 +132,10 @@ export const getPostDetails = async (req: Request, res: Response) => {
                 }
             ]
         });
-
-        res.status(200).json({ post: foundPost })
+        // @ts-ignore
+        res.status(200).json({
+            post: foundPost,
+        })
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });
     }
@@ -235,6 +239,8 @@ export const getPublicPost = async (req: Request, res: Response) => {
                     id: u?.id,
                     title: u?.title,
                     content: u?.content,
+                    description: u?.description,
+                    backgroundUrl: u?.backgroundUrl,
                     // @ts-ignore
                     author: u ? u["user"]?.name : "",
                     updatedAt: u.updatedAt,

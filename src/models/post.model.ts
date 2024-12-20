@@ -11,17 +11,21 @@ interface PostAttributes {
     id: string;
     title: string;
     content: string;
+    description?: string;
+    backgroundUrl?: string;
     userId: string; // Foreign key to User
     createdAt?: Date;
     updatedAt?: Date;
 }
-  
-interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
+
+interface PostCreationAttributes extends Optional<PostAttributes, 'id'> { }
 
 class Post extends Model<PostAttributes, PostCreationAttributes> implements PostAttributes {
     public id!: string;
     public title!: string;
     public content!: string;
+    public description!: string;
+    public backgroundUrl!: string;
     public userId!: string;
     public createdAt!: Date;
     public updatedAt!: Date;
@@ -37,6 +41,15 @@ Post.init(
         title: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        backgroundUrl: {
+            type: DataTypes.STRING,
+            field: "background_url",
+            allowNull: true,
         },
         content: {
             type: DataTypes.TEXT,
@@ -74,5 +87,5 @@ Post.belongsTo(User, {
     foreignKey: "userId",
     as: "user",
 });
-  
+
 export default Post;

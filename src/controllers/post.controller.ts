@@ -256,3 +256,30 @@ export const getPublicPost = async (req: Request, res: Response) => {
         res.status(500).json({ message: (error as any)?.message });
     }
 }
+
+/**
+ * Get Post details include user.
+ * @param req 
+ * @param res 
+ */
+export const getPublicPostDetails = async (req: Request, res: Response) => {
+    try {
+        const { postId } = req.params;
+
+        const foundPost = await Post.findByPk(postId, {
+            include: [
+                {
+                    model: User,
+                    as: "user",
+                    attributes: ["name"]
+                }
+            ]
+        });
+        // @ts-ignore
+        res.status(200).json({
+            post: foundPost,
+        })
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}

@@ -8,7 +8,7 @@ import { Request, Response } from "express"
 import { Op } from "sequelize";
 
 /**
- * Get all post based on for authenticated user
+ * Get all post based on for authenticated user 
  * @param req 
  * @param res 
  */
@@ -123,6 +123,48 @@ export const deletePost = async (req: Request, res: Response) => {
         res.status(500).json({ message: (error as any)?.message });
     }
 }
+
+/**
+ * like / unlike
+ * @param req 
+ * @param res 
+ */
+
+// export const likePost = async (req: Request, res: Response) => {
+//     try {
+//         const { postId } = req.params;
+
+//         const foundPost = await Post.findByPk(postId);
+
+//         if (foundPost) {
+//             foundPost.countLikes = foundPost.countLikes + 1;
+//             await foundPost.save()
+//         }
+
+//         res.status(200).json({ message: "Count Like" });
+//     } catch (error) {
+//         res.status(500).json({ message: (error as any)?.message });
+//     }
+// }
+
+// export const unlikePost = async (req: Request, res: Response) => {
+//     try {
+//         const { postId } = req.params;
+
+//         const foundPost = await Post.findByPk(postId);
+
+//         if (foundPost) {
+//             foundPost.countLikes = foundPost.countLikes - 1;
+//             await foundPost.save()
+//         }
+
+//         res.status(200).json({ message: "Count Like" });
+//     } catch (error) {
+//         res.status(500).json({ message: (error as any)?.message });
+//     }
+// }
+
+
 
 export const publishPost = async (req: Request, res: Response) => {
     try {

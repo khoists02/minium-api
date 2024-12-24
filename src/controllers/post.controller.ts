@@ -7,6 +7,66 @@ import { getUserId } from "@src/utils/authentication"
 import { Request, Response } from "express"
 import { Op } from "sequelize";
 
+/**
+ * Get all post based on for authenticated user
+ * @param req 
+ * @param res 
+ */
+export const getMyPosts = async (req: Request, res: Response) => {
+    try {
+        const { title } = req.query;
+
+        const userId = getUserId(req);
+
+        const foundUser = await User.findByPk(userId as string);
+
+        if (!foundUser) res.status(404).json({ message: "User not found." });
+
+        const whereConditions: any = {};
+
+        if (title) {
+            whereConditions.title = { [Op.like]: `%${title}%` }; // Partial match
+        }
+
+        if (userId) {
+            whereConditions.userId = { [Op.eq]: userId }; // Partial match
+        }
+
+        const totalItems = await Post.count({ where: whereConditions });
+
+        const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems);
+
+        const allPost = await Post.findAll({
+            include: [{
+                model: User,
+                as: "user",
+                attributes: ["id"]
+            }],
+            where: whereConditions,
+            offset: skip,
+            limit: limit,
+        });
+        // Prepare paginated response
+        const response: PaginatedResponse<IPostResponse[]> = {
+            content: allPost.map((u) => {
+                return {
+                    id: u?.id,
+                    title: u?.title,
+                    content: u?.content,
+                    userId: u?.userId
+                }
+            }),
+            totalItems,
+            totalPages,
+            currentPage: page,
+            pageSize: limit,
+        };
+        res.json(response);
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
 export const createPost = async (req: Request, res: Response) => {
     try {
         const userId = getUserId(req);
@@ -19,6 +79,7 @@ export const createPost = async (req: Request, res: Response) => {
             await Post.create({
                 title,
                 content,
+                draft: true,
                 userId: foundUser.id,
             });
 
@@ -216,6 +277,9 @@ export const getPublicPost = async (req: Request, res: Response) => {
         if (title) {
             whereConditions.title = { [Op.like]: `%${title}%` }; // Partial match
         }
+
+        // Filter post with publish status.
+        whereConditions.draft = { [Op.eq]: false };
 
         const totalItems = await Post.count({ where: whereConditions });
 

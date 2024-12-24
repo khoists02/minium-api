@@ -13,7 +13,8 @@ interface PostAttributes {
     content: string;
     description?: string;
     backgroundUrl?: string;
-    userId: string; // Foreign key to User
+    userId: string; // Foreign key to User,
+    draft: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -26,6 +27,7 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
     public content!: string;
     public description!: string;
     public backgroundUrl!: string;
+    public draft!: boolean;
     public userId!: string;
     public createdAt!: Date;
     public updatedAt!: Date;
@@ -58,6 +60,11 @@ Post.init(
         userId: {
             type: DataTypes.UUID,
             allowNull: false,
+        },
+        draft: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
         },
         // Map Sequelize's default timestamp fields to custom column names
         createdAt: {

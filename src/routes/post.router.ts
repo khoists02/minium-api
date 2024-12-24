@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPost, deletePost, getAllPost, getAllPostByUserId, getPostDetails, updatePost } from "@src/controllers/post.controller";
+import { createPost, deletePost, getAllPost, getAllPostByUserId, getMyPosts, getPostDetails, updatePost } from "@src/controllers/post.controller";
 
 const router = Router();
 
@@ -9,6 +9,7 @@ router.get("/posts/:postId", getPostDetails);
 router.delete("/posts/:id", deletePost);
 router.get("/posts", getAllPost);
 router.get("/users/:userId/posts", getAllPostByUserId);
+router.get("/myposts", getMyPosts);
 // getPostDetails
 // @ts-ignore
 export default router;

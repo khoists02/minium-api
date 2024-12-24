@@ -14,17 +14,17 @@ const app = express();
 
 console.log("Application allow origins :", appConfig.allowOrigins?.split(","))
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    useDefaults: true,
-    directives: {
-      "default-src": ["'self'"],
-      "img-src": ["'self'", "https:"],
-      "script-src": ["'self'", "'unsafe-inline'"],
-    },
-  },
-  crossOriginEmbedderPolicy: false, // Example: disable this for special use cases
-}));
+// app.use(helmet({
+//   contentSecurityPolicy: {
+//     useDefaults: true,
+//     directives: {
+//       "default-src": ["'self'"],
+//       "img-src": ["'self'", "https:"],
+//       "script-src": ["'self'", "'unsafe-inline'"],
+//     },
+//   },
+//   crossOriginEmbedderPolicy: false, // Example: disable this for special use cases
+// }));
 
 // Middlewares
 app.use(express.json());

@@ -124,6 +124,21 @@ export const deletePost = async (req: Request, res: Response) => {
     }
 }
 
+export const publishPost = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const foundPost = await Post.findByPk(id);
+
+        if (foundPost) foundPost.draft = false;
+        await foundPost?.save();
+
+        res.status(200).json({ message: "Published Post" });
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
 /**
  * Get all posts
  * @param req 
@@ -343,6 +358,16 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
         res.status(200).json({
             post: foundPost,
         })
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
+export const uploadImage = async (req: Request, res: Response) => {
+    try {
+        // @ts-ignore
+        const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+        res.json({ imgUrl: fileUrl })
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });
     }

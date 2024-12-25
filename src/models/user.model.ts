@@ -20,6 +20,7 @@ interface UserAttributes {
   email: string;
   password: string; // Foreign key to User
   photoUrl: string;
+  description?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +33,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public email!: string;
   public password!: string;
   public photoUrl!: string;
+  public description!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -59,6 +61,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
       field: "photo_url"
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     // Map Sequelize's default timestamp fields to custom column names
     createdAt: {

@@ -25,6 +25,7 @@ export const getAuthenticatedUser = async (req: Request, res: Response) => {
                 id: foundUser?.id,
                 email: foundUser?.email,
                 name: foundUser?.name,
+                description: foundUser?.description,
                 photoUrl: foundUser?.photoUrl ? `${req.protocol}://${req.get("host")}${foundUser?.photoUrl}` : "",
             }
         })
@@ -48,6 +49,21 @@ export const uploadProfile = async (req: Request, res: Response) => {
 
         res.status(200).json({ message: "Profile image uploaded.", foundUser });
 
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
+export const updateDescription = async (req: Request, res: Response) => {
+    try {
+        const foundUser = await User.findByPk(getUserId(req));
+        // @ts-ignore
+        foundUser.description = req.body.description;
+
+        // @ts-ignore
+        await foundUser.save();
+
+        res.status(200).json({ message: "Profile image uploaded.", foundUser });
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });
     }

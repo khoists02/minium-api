@@ -383,7 +383,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
             include: [{
                 model: User,
                 as: "user",
-                attributes: ["id", "name", "photoUrl"]
+                attributes: ["id", "name", "photoUrl", "description"]
             }],
             where: whereConditions,
             order: [["updatedAt", "ASC"]],

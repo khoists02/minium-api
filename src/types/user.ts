@@ -31,15 +31,10 @@ export interface IPublicPostResponse {
     content?: string;
     description?: string;
     backgroundUrl?: string;
-    author?: string;
     updatedAt?: Date | string;
 }
 
 export interface ICommentResponse {
     id?: string;
     content?: string;
-    author?: {
-        id?: string;
-        name?: string;
-    }
 }

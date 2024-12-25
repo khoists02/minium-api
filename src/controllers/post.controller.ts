@@ -18,7 +18,7 @@ import { PaginatedResponse } from "@src/types/pagination";
 import { IPostResponse, IPublicPostResponse } from "@src/types/user";
 import { getUserId } from "@src/utils/authentication"
 import { Request, Response } from "express"
-import { json, Op } from "sequelize";
+import { Op } from "sequelize";
 
 /**
  * Get all post based on for authenticated user 
@@ -383,7 +383,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
             include: [{
                 model: User,
                 as: "user",
-                attributes: ["id", "name"]
+                attributes: ["id", "name", "photoUrl"]
             }],
             where: whereConditions,
             order: [["updatedAt", "ASC"]],
@@ -400,7 +400,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
                     description: u?.description,
                     backgroundUrl: u?.backgroundUrl,
                     // @ts-ignore
-                    author: u ? u["user"]?.name : "",
+                    user: u?.user,
                     updatedAt: u.updatedAt,
                 }
             }),
@@ -429,7 +429,7 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
                 {
                     model: User,
                     as: "user",
-                    attributes: ["name"]
+                    attributes: ["id", "name", "photoUrl"]
                 }
             ]
         });

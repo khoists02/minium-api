@@ -44,12 +44,6 @@ Likes.init(
   {
     sequelize,
     tableName: "likes",
-    indexes: [
-      {
-        unique: true,
-        fields: ["postId", "userId"]
-      }
-    ]
   },
 );
 

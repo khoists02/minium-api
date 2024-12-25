@@ -10,7 +10,6 @@ import {
     verifyRefreshToken
 } from "@src/utils/authentication";
 import { UniqueConstraintError } from "sequelize";
-import Profile from "@src/models/profile.model";
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -18,13 +17,9 @@ export const register = async (req: Request, res: Response) => {
         const decrypted = await hashPassword(body.password);
         const user = await User.create({ ...body, password: decrypted });
 
-        if (user) {
-            await Profile.create({ userId: user?.id, bio: "" });
-        }
         res.status(201).json({ username: user.name })
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ message: (error as any)?.message || "Internal Server Error" });
     }
 }
 
@@ -59,7 +54,6 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const refreshTokenCall = async (req: Request, res: Response) => {
-    console.log("refreshToken starting ....");
     try {
         const refreshToken = req.cookies["refresh.token"]; // Extract token from cookies
         if (!refreshToken) res.status(401).json({ message: "Unauthenticated" });
@@ -89,5 +83,5 @@ export const refreshTokenCall = async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
     res.clearCookie("token");
     res.clearCookie("refresh.token");
-    res.json({ message: 'Logged out successfully' });
+    res.json({ message: "Logged out successfully" });
 }

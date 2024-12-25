@@ -15,7 +15,7 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
     (req as any).user = decoded; // Attach decoded payload to request
     next();
   } catch (err) {
-    // console.log("validateToken", { err });
+    console.log("validateToken", { err });
     if (err instanceof TokenExpiredError) {
       return res.status(401).json({ message: "Unauthorized: Expired token", code: 1007 });
     } else {

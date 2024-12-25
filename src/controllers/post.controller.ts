@@ -1,3 +1,4 @@
+import { sequelize } from "@src/database";
 import { getPaginationFromRequest } from "@src/helpers/pagination";
 import Likes from "@src/models/like.model";
 import Post from "@src/models/post.model";
@@ -6,7 +7,7 @@ import { PaginatedResponse } from "@src/types/pagination";
 import { IPostResponse, IPublicPostResponse } from "@src/types/user";
 import { getUserId } from "@src/utils/authentication"
 import { Request, Response } from "express"
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 /**
  * Get all post based on for authenticated user 
@@ -133,17 +134,19 @@ export const deletePost = async (req: Request, res: Response) => {
 
 export const likePost = async (req: Request, res: Response) => {
     try {
-        const { postId, userId } = req.params;
+        await sequelize.transaction(async (t) => {
+            const { postId, userId } = req.params;
 
-        const foundPost = await Post.findByPk(postId);
+            const foundPost = await Post.findByPk(postId, { transaction: t });
 
-        if (!foundPost) res.status(404).json({ message: "Post not found" });
-        else {
-            await Likes.create({ postId, userId });
-            await foundPost?.increment("countLikes");
-            await foundPost?.save();
-            res.status(200).json({ message: "Like post " + foundPost?.title });
-        }
+            if (!foundPost) res.status(404).json({ message: "Post not found" });
+            else {
+                await Likes.create({ postId, userId }, { transaction: t });
+                await foundPost?.increment("countLikes");
+                await foundPost?.save({ transaction: t });
+                res.status(200).json({ message: "Like post " + foundPost?.title });
+            }
+        })
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });
     }

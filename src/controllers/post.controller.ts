@@ -1,4 +1,5 @@
 import { getPaginationFromRequest } from "@src/helpers/pagination";
+import Likes from "@src/models/like.model";
 import Post from "@src/models/post.model";
 import User from "@src/models/user.model";
 import { PaginatedResponse } from "@src/types/pagination";
@@ -130,41 +131,42 @@ export const deletePost = async (req: Request, res: Response) => {
  * @param res 
  */
 
-// export const likePost = async (req: Request, res: Response) => {
-//     try {
-//         const { postId } = req.params;
+export const likePost = async (req: Request, res: Response) => {
+    try {
+        const { postId, userId } = req.params;
 
-//         const foundPost = await Post.findByPk(postId);
+        const foundPost = await Post.findByPk(postId);
 
-//         if (foundPost) {
-//             foundPost.countLikes = foundPost.countLikes + 1;
-//             await foundPost.save()
-//         }
+        if (!foundPost) res.status(404).json({ message: "Post not found" });
+        else {
+            await Likes.create({ postId, userId });
+            await foundPost?.increment("countLikes");
+            await foundPost?.save();
+            res.status(200).json({ message: "Like post " + foundPost?.title });
+        }
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
 
-//         res.status(200).json({ message: "Count Like" });
-//     } catch (error) {
-//         res.status(500).json({ message: (error as any)?.message });
-//     }
-// }
+export const unlikePost = async (req: Request, res: Response) => {
+    try {
+        const { postId, userId } = req.params;
 
-// export const unlikePost = async (req: Request, res: Response) => {
-//     try {
-//         const { postId } = req.params;
+        const foundPost = await Post.findByPk(postId);
 
-//         const foundPost = await Post.findByPk(postId);
-
-//         if (foundPost) {
-//             foundPost.countLikes = foundPost.countLikes - 1;
-//             await foundPost.save()
-//         }
-
-//         res.status(200).json({ message: "Count Like" });
-//     } catch (error) {
-//         res.status(500).json({ message: (error as any)?.message });
-//     }
-// }
-
-
+        if (!foundPost) res.status(404).json({ message: "Post not found" });
+        else {
+            const likesDelete = await Likes.findOne({ where: { postId, userId } });
+            await likesDelete?.destroy();
+            await foundPost?.decrement("countLikes");
+            await foundPost?.save();
+            res.status(200).json({ message: "Unlike post" + foundPost?.title });
+        }
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
 
 export const publishPost = async (req: Request, res: Response) => {
     try {

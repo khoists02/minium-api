@@ -63,6 +63,7 @@ Comment.init(
   {
     sequelize,
     tableName: "comments",
+    timestamps: true
   }
 );
 

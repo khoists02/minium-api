@@ -143,25 +143,45 @@ export const deletePost = async (req: Request, res: Response) => {
  * @param res 
  */
 
+const handleCountLikeInPostTransaction = async (postId: string, userId: string, increase = true) => {
+    // Start a transaction
+    const transaction = await sequelize.transaction();
+
+    try {
+        const foundPost = await Post.findByPk(postId);
+
+        if (!foundPost) {
+            throw new Error("Post not found");
+        }
+
+        if (increase)
+            await Likes.create({ postId, userId }, { transaction });
+        else {
+            const foundLike = await Likes.findOne({ where: { postId, userId }, transaction });
+            await foundLike?.destroy({ transaction });
+        }
+
+        // Increase the likes count
+        if (increase) foundPost.countLikes += 1;
+        else foundPost.countLikes -= 1;
+
+        // Save the changes
+        await foundPost.save({ transaction });
+
+        await transaction.commit();
+        return foundPost;
+
+    } catch (error) {
+        await transaction.rollback();
+    }
+}
+
 export const likePost = async (req: Request, res: Response) => {
     try {
-        await sequelize.transaction(async (t) => {
-            const { postId, userId } = req.params;
+        const { postId, userId } = req.params;
+        const newPost = await handleCountLikeInPostTransaction(postId, userId, true);
 
-            const foundPost = await Post.findByPk(postId, { transaction: t });
-
-            if (!foundPost) {
-                res.status(404).json({ message: "Post not found" });
-            }
-            else {
-                await Likes.create({ postId, userId }, { transaction: t });
-
-                await foundPost?.increment({ countLikes: 1 });
-
-            };
-            await t.commit(); // commit transition.
-            res.status(200).json({ message: "Like post " + foundPost?.title });
-        });
+        res.status(200).json({ countLikes: newPost?.countLikes })
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });
     }
@@ -169,19 +189,10 @@ export const likePost = async (req: Request, res: Response) => {
 
 export const unlikePost = async (req: Request, res: Response) => {
     try {
-        await sequelize.transaction(async (t) => {
-            const { postId, userId } = req.params;
+        const { postId, userId } = req.params;
+        const newPost = await handleCountLikeInPostTransaction(postId, userId, false);
 
-            const foundPost = await Post.findByPk(postId);
-
-            if (!foundPost) res.status(404).json({ message: "Post not found" });
-            else {
-                const likesDelete = await Likes.findOne({ where: { postId, userId } });
-                await likesDelete?.destroy();
-                await foundPost?.decrement({ countLikes: 1 });
-                res.status(200).json({ message: "Unlike post" + foundPost?.title });
-            }
-        });
+        res.status(200).json({ countLikes: newPost?.countLikes })
 
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });

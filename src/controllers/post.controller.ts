@@ -18,7 +18,7 @@ import { PaginatedResponse } from "@src/types/pagination";
 import { IPostResponse, IPublicPostResponse } from "@src/types/user";
 import { getUserId } from "@src/utils/authentication"
 import { Request, Response } from "express"
-import { Op } from "sequelize";
+import { json, Op } from "sequelize";
 
 /**
  * Get all post based on for authenticated user 
@@ -155,8 +155,8 @@ export const likePost = async (req: Request, res: Response) => {
             }
             else {
                 await Likes.create({ postId, userId }, { transaction: t });
-                await foundPost?.increment("countLikes");
-                await foundPost?.save({ transaction: t });
+
+                await foundPost?.increment({ countLikes: 1 });
 
             };
             await t.commit(); // commit transition.
@@ -169,18 +169,20 @@ export const likePost = async (req: Request, res: Response) => {
 
 export const unlikePost = async (req: Request, res: Response) => {
     try {
-        const { postId, userId } = req.params;
+        await sequelize.transaction(async (t) => {
+            const { postId, userId } = req.params;
 
-        const foundPost = await Post.findByPk(postId);
+            const foundPost = await Post.findByPk(postId);
 
-        if (!foundPost) res.status(404).json({ message: "Post not found" });
-        else {
-            const likesDelete = await Likes.findOne({ where: { postId, userId } });
-            await likesDelete?.destroy();
-            await foundPost?.decrement("countLikes");
-            await foundPost?.save();
-            res.status(200).json({ message: "Unlike post" + foundPost?.title });
-        }
+            if (!foundPost) res.status(404).json({ message: "Post not found" });
+            else {
+                const likesDelete = await Likes.findOne({ where: { postId, userId } });
+                await likesDelete?.destroy();
+                await foundPost?.decrement({ countLikes: 1 });
+                res.status(200).json({ message: "Unlike post" + foundPost?.title });
+            }
+        });
+
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });
     }
@@ -430,6 +432,18 @@ export const uploadImage = async (req: Request, res: Response) => {
         // @ts-ignore
         const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
         res.json({ imgUrl: fileUrl })
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
+export const checkVisibleLike = async (req: Request, res: Response) => {
+    try {
+        const { postId, userId } = req.params;
+
+        const count = await Likes.count({ where: { postId, userId } });
+
+        res.json({ visible: count > 0 });
     } catch (error) {
         res.status(500).json({ message: (error as any)?.message });
     }

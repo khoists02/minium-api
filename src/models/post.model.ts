@@ -27,6 +27,7 @@ interface PostAttributes {
     userId: string; // Foreign key to User,
     draft?: boolean;
     countLikes?: number;
+    countComments?: number;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -41,6 +42,7 @@ class Post extends Model<PostAttributes, PostCreationAttributes> implements Post
     public backgroundUrl!: string;
     public draft!: boolean;
     public countLikes!: number;
+    public countComments!: number;
     public userId!: string;
     public createdAt!: Date;
     public updatedAt!: Date;
@@ -85,6 +87,12 @@ Post.init(
             allowNull: true,
             defaultValue: 0,
             field: "count_likes",
+        },
+        countComments: {
+            type: DataTypes.NUMBER,
+            allowNull: true,
+            defaultValue: 0,
+            field: "count_comments",
         },
         // Map Sequelize's default timestamp fields to custom column names
         createdAt: {

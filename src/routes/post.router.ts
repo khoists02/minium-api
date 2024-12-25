@@ -10,7 +10,7 @@
  */
 
 import { Router } from "express";
-import { createPost, deletePost, getAllPost, getAllPostByUserId, getMyPosts, getPostDetails, likePost, publishPost, unlikePost, updatePost, uploadImage } from "@src/controllers/post.controller";
+import { checkVisibleLike, createPost, deletePost, getAllPost, getAllPostByUserId, getMyPosts, getPostDetails, likePost, publishPost, unlikePost, updatePost, uploadImage } from "@src/controllers/post.controller";
 import { upload } from "@src/middlewares/upload";
 const router = Router();
 
@@ -25,7 +25,7 @@ router.get("/myposts", getMyPosts);
 
 router.post("/posts/:postId/users/:userId/like", likePost);
 router.delete("/posts/:postId/users/:userId/unlike", unlikePost);
-
+router.get("/posts/:postId/users/:userId/visible", checkVisibleLike);
 // @ts-ignore
 router.post("/posts/upload", upload.single("postImage"), uploadImage);
 // getPostDetails

@@ -26,7 +26,7 @@ const initDb = async () => {
     console.log("Starting init db...");
     await sequelize.authenticate();
     console.log("Database connected!");
-    await sequelize.sync({ alter: false }); // Sync models with the database, true will be automatic sync new modes in db
+    await sequelize.sync({ alter: true }); // Sync models with the database, true will be automatic sync new modes in db
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }

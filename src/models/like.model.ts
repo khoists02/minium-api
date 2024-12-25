@@ -18,7 +18,6 @@ interface LikesAttributes {
   id: string;
   userId: string;
   postId: string;
-  createdAt?: Date;
 }
 
 interface LikesCreationAttributes extends Optional<LikesAttributes, "id"> { }
@@ -27,7 +26,6 @@ class Likes extends Model<LikesAttributes, LikesCreationAttributes> implements L
   public id!: string;
   public userId!: string;
   public postId!: string;
-  public createdAt!: Date;
 }
 
 Likes.init(
@@ -47,16 +45,11 @@ Likes.init(
       allowNull: false,
       field: "user_id",
     },
-    // Map Sequelize's default timestamp fields to custom column names
-    createdAt: {
-      type: DataTypes.DATE,
-      field: "created_at", // Map to `created_at` in the database,
-      defaultValue: Date.now()
-    },
   },
   {
     sequelize,
     tableName: "likes",
+    timestamps: false, // Disable both createdAt and updatedAt
   },
 );
 

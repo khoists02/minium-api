@@ -18,7 +18,10 @@ export const getAuthenticatedUser = async (req: Request, res: Response) => {
     const userCookie = (req as any).user;
 
     try {
-        const foundUser = await User.findByPk(userCookie?.id);
+        const foundUser = await User.findByPk(getUserId(req));
+
+        const foundProfile = await Profile.findOne({ where: { userId: getUserId(req) } })
+
 
         if (!foundUser) res.status(401).json({ message: "Unauthenticated User, User not found." });
 
@@ -27,6 +30,9 @@ export const getAuthenticatedUser = async (req: Request, res: Response) => {
                 id: foundUser?.id,
                 email: foundUser?.email,
                 name: foundUser?.name,
+                // @ts-ignore
+                // photoUrl: foundUser ? foundUser["profile"]?.bio : "",
+                photoUrl: foundProfile ? `${req.protocol}://${req.get("host")}${foundProfile.bio}` : "",
             }
         })
     } catch (error) {

@@ -111,9 +111,11 @@ export const updatePost = async (req: Request, res: Response) => {
         const foundPost = await Post.findByPk(id);
 
         if (foundPost) {
-            const { title, content } = req.body;
+            const { title, content, description } = req.body;
             foundPost.title = title;
             foundPost.content = content;
+            foundPost.description = description;
+            foundPost.updatedAt = new Date();
             await foundPost.save();
         }
 
@@ -138,6 +140,7 @@ export const deletePost = async (req: Request, res: Response) => {
 }
 
 /**
+ * Actions
  * like / unlike
  * @param req 
  * @param res 
@@ -215,7 +218,7 @@ export const publishPost = async (req: Request, res: Response) => {
 }
 
 /**
- * Get all posts
+ * Public
  * @param req 
  * @param res 
  */
@@ -242,6 +245,7 @@ export const getAllPost = async (req: Request, res: Response) => {
             where: whereConditions,
             offset: skip,
             limit: limit,
+            order: [["updated_at", "DESC"]],
         });
         // Prepare paginated response
         const response: PaginatedResponse<IPostResponse[]> = {

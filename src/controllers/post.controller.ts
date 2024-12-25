@@ -429,7 +429,7 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
                 {
                     model: User,
                     as: "user",
-                    attributes: ["id", "name", "photoUrl"]
+                    attributes: ["id", "name", "photoUrl", "description"]
                 }
             ]
         });

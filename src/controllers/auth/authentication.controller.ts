@@ -37,7 +37,6 @@ export const login = async (req: Request, res: Response) => {
             res.status(401).json({ message: "Invalid Credentials." });
         }
 
-
         const accessToken = generateAccessToken({ id: foundUser?.id, username: foundUser?.email });
         const refreshToken = generateRefreshToken({ id: foundUser?.id, username: foundUser?.email })
         // TODO: set cookies to every request headers.
@@ -46,9 +45,9 @@ export const login = async (req: Request, res: Response) => {
         res.status(200).json({ token: accessToken })
 
     } catch (error) {
-        if (error instanceof UniqueConstraintError) {
-            res.status(400).json({ message: (error as UniqueConstraintError).message });
-        }
+        // if (error instanceof UniqueConstraintError) {
+        //     res.status(400).json({ message: (error as UniqueConstraintError).message });
+        // }
         res.status(500).json({ error: "Internal Server Error" });
     }
 }

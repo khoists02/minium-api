@@ -16,11 +16,12 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
     next();
   } catch (err) {
     console.log("validateToken", { err });
-    if (err instanceof TokenExpiredError) {
-      return res.status(401).json({ message: "Unauthorized: Expired token", code: 1007 });
-    } else {
-      return res.status(401).json({ message: "Unauthorized: Invalid token", code: 1000 });
-    }
+    // if (err instanceof TokenExpiredError) {
+    //   return res.status(401).json({ message: "Unauthorized: Expired token", code: 1007 });
+    // } else {
+
+    // }
+    return res.status(401).json({ message: "Unauthorized: Invalid token", code: 1000 });
 
   }
 };

@@ -7,41 +7,42 @@ import User from "@src/models/user.model";
  * One to One relationship with user.model
  */
 class Profile extends Model {
-    public id!: string;
-    public bio!: string;
-    public userId!: string; // Foreign Key 
+  public id!: string;
+  public bio!: string;
+  public userId!: string; // Foreign Key 
 }
-  
+
 Profile.init(
-    {
-      id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4, // Automatically generates a UUID
-        primaryKey: true,
-      },
-      bio: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      userId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-      },
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4, // Automatically generates a UUID
+      primaryKey: true,
     },
-    {
-      sequelize,
-      tableName: "profiles",
+    bio: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-  );
-  
-  // Associate Profile with User
-  User.hasOne(Profile, {
-    foreignKey: "userId",
-    as: "profile",
-  });
-  Profile.belongsTo(User, {
-    foreignKey: "userId",
-    as: "user",
-  });
-  
-  export default Profile;
+    userId: {
+      type: DataTypes.UUID,
+      field: "user_id",
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    tableName: "profiles",
+  },
+);
+
+// Associate Profile with User
+User.hasOne(Profile, {
+  foreignKey: "userId",
+  as: "profile",
+});
+Profile.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+export default Profile;

@@ -61,6 +61,7 @@ Post.init(
         },
         userId: {
             type: DataTypes.UUID,
+            field: "user_id",
             allowNull: false,
         },
         draft: {

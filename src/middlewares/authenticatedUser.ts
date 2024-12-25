@@ -15,13 +15,15 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
     (req as any).user = decoded; // Attach decoded payload to request
     next();
   } catch (err) {
-    console.log("validateToken", { err });
-    // if (err instanceof TokenExpiredError) {
-    //   return res.status(401).json({ message: "Unauthorized: Expired token", code: 1007 });
-    // } else {
+    const tokenError = err as TokenExpiredError;
 
-    // }
-    return res.status(401).json({ message: "Unauthorized: Invalid token", code: 1000 });
+    const expiredTime = tokenError?.expiredAt ? new Date(tokenError?.expiredAt) : null;
+
+    if (expiredTime && (expiredTime.getTime() < new Date().getTime())) {
+      return res.status(401).json({ message: "Unauthorized: Expired token", code: 1007 });
+    } else {
+      return res.status(401).json({ message: "Unauthorized: Invalid token", code: 1000 });
+    }
 
   }
 };

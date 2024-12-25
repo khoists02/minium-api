@@ -9,7 +9,6 @@ import {
     setRefreshTokenCookie,
     verifyRefreshToken
 } from "@src/utils/authentication";
-import { UniqueConstraintError } from "sequelize";
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -64,7 +63,7 @@ export const refreshTokenCall = async (req: Request, res: Response) => {
         const foundUser = await User.findByPk((decoded as any).id);
 
         if (foundUser) {
-            const newToken = generateAccessToken(foundUser);
+            const newToken = generateAccessToken({ id: foundUser?.id, username: foundUser?.email });
             setAccessTokenCookie(res, newToken);
             res.status(200).json({ message: "Update token success !!!" });
         } else {
@@ -72,6 +71,7 @@ export const refreshTokenCall = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
+        console.log("refreshTokenCall", { error })
         res.status(401).json({
             message: (error as any)?.message || "Internal server error",
             code: 1000,

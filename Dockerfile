@@ -1,11 +1,11 @@
-# Use the official Node.js image as a base
-FROM node:18-alpine
+# Use a lightweight Node.js base image
+FROM node:18-alpine AS base
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+# Set the working directory
+WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy package files first to leverage Docker caching
+COPY package.json package-lock.json ./
 
 # Copy the types folder into the container
 COPY /src/types /app/types
@@ -18,7 +18,6 @@ COPY . .
 
 # Build the TypeScript code
 RUN npm run build
-
 
 # Install nodemon globally
 RUN npm install -g nodemon

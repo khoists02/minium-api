@@ -2,35 +2,20 @@ import Profile from "@src/models/profile.model";
 import User from "@src/models/user.model";
 import { getUserId } from "@src/utils/authentication";
 import { Request, Response } from "express";
-import fs from "fs";
 
 export const getAuthenticatedUser = async (req: Request, res: Response) => {
     const userCookie = (req as any).user;
 
     try {
-        const foundUser = await User.findByPk(userCookie?.id, {
-            include: [
-                {
-                    model: Profile,
-                    as: "profile",
-                    attributes: ["id", "bio"]
-                }
-            ]
-        });
+        const foundUser = await User.findByPk(userCookie?.id);
 
         if (!foundUser) res.status(401).json({ message: "Unauthenticated User, User not found." });
-
-        console.log({ foundUser })
-
-        // foundUser.pro
 
         res.status(200).json({
             account: {
                 id: foundUser?.id,
                 email: foundUser?.email,
                 name: foundUser?.name,
-                // @ts-ignore
-                imageUrl: foundUser ? foundUser["profile"]?.bio : ""
             }
         })
     } catch (error) {

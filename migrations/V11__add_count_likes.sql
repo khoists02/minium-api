@@ -1,2 +1,0 @@
-ALTER TABLE posts
-ADD COLUMN count_likes int DEFAULT 0 NULL;

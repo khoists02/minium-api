@@ -53,7 +53,7 @@ export const getMyPosts = async (req: Request, res: Response) => {
             include: [{
                 model: User,
                 as: "user",
-                attributes: ["id"]
+                attributes: ["id", "email", "name", "photoUrl", "description"]
             }],
             where: whereConditions,
             offset: skip,
@@ -240,7 +240,7 @@ export const getAllPost = async (req: Request, res: Response) => {
             include: [{
                 model: User,
                 as: "user",
-                attributes: ["id"]
+                attributes: ["id", "email", "name", "photoUrl", "description"]
             }],
             where: whereConditions,
             offset: skip,
@@ -283,7 +283,7 @@ export const getPostDetails = async (req: Request, res: Response) => {
                 {
                     model: User,
                     as: "user",
-                    attributes: ["id", "name", "email"]
+                    attributes: ["id", "email", "name", "photoUrl", "description"]
                 }
             ]
         });
@@ -383,7 +383,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
             include: [{
                 model: User,
                 as: "user",
-                attributes: ["id", "name", "photoUrl", "description"]
+                attributes: ["id", "email", "name", "photoUrl", "description"]
             }],
             where: whereConditions,
             order: [["updatedAt", "ASC"]],
@@ -429,7 +429,7 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
                 {
                     model: User,
                     as: "user",
-                    attributes: ["id", "name", "photoUrl", "description"]
+                    attributes: ["id", "email", "name", "photoUrl", "description"]
                 }
             ]
         });

@@ -28,8 +28,9 @@ export const createComment = async (req: Request, res: Response) => {
 
         if (!foundPost) res.status(404).json({ message: "Post can not found." });
 
-        const newComment = await Comment.create({
+        await Comment.create({
             content: req.body.content,
+            title: req.body.title,
             userId,
             postId,
         });
@@ -45,7 +46,7 @@ export const updateComment = async (req: Request, res: Response) => {
     try {
         const { postId, commentId } = req.params;
 
-        const { content } = req.body;
+        const { content, title } = req.body;
 
         const foundPost = await Post.findByPk(postId);
 
@@ -54,6 +55,7 @@ export const updateComment = async (req: Request, res: Response) => {
         const foundComment = await Comment.findByPk(commentId);
 
         if (foundComment) {
+            foundComment.title = title;
             foundComment.content = content;
             // Updated timestamp.
             foundComment.updatedAt = new Date();
@@ -107,7 +109,7 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
                 {
                     model: User,
                     as: "user",
-                    attributes: ["id", "name"]
+                    attributes: ["id", "email", "name", "photoUrl", "description"]
                 }
             ]
         });
@@ -117,6 +119,7 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
             content: comments.map((cmt) => {
                 return {
                     id: cmt?.id,
+                    title: cmt?.title,
                     content: cmt?.content,
                     // @ts-ignore
                     author: cmt["user"]

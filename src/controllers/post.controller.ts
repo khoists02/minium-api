@@ -463,3 +463,23 @@ export const checkVisibleLike = async (req: Request, res: Response) => {
         res.status(500).json({ message: (error as any)?.message });
     }
 }
+
+export const getCountComments = async (req: Request, res: Response) => {
+    try {
+        const post = await Post.findByPk(req.params.postId);
+
+        res.json({ count: post?.countComments });
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}
+
+export const getCountLikes = async (req: Request, res: Response) => {
+    try {
+        const post = await Post.findByPk(req.params.postId);
+
+        res.json({ count: post?.countLikes });
+    } catch (error) {
+        res.status(500).json({ message: (error as any)?.message });
+    }
+}

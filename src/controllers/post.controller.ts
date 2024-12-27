@@ -402,6 +402,8 @@ export const getPublicPost = async (req: Request, res: Response) => {
                     // @ts-ignore
                     user: u?.user,
                     updatedAt: u.updatedAt,
+                    countComments: u?.countComments,
+                    countLikes: u?.countLikes,
                 }
             }),
             totalItems,

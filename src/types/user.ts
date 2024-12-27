@@ -32,6 +32,8 @@ export interface IPublicPostResponse {
     description?: string;
     backgroundUrl?: string;
     updatedAt?: Date | string;
+    countLikes?: number;
+    countComments?: number;
 }
 
 export interface ICommentResponse {

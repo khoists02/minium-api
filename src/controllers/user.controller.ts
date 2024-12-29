@@ -11,10 +11,10 @@
 
 import { Request, Response } from "express";
 import User from "@src/models/user.model";
-import { convertUserToResponse } from "@src/helpers/users/user.helper";
 import { getPaginationFromRequest } from "@src/helpers/pagination";
 import { PaginatedResponse } from "@src/types/pagination";
 import { IUserResponse } from "@src/types/user";
+import { convertToUserResponse } from "@src/utils/convert";
 
 export const getUsers = async (req: Request, res: Response) => {
   // Fetch the total number of users
@@ -32,7 +32,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
   // Prepare paginated response
   const response: PaginatedResponse<IUserResponse[]> = {
-    content: users.map((u) => convertUserToResponse(u)),
+    content: users.map((u) => convertToUserResponse(u)),
     totalItems,
     totalPages,
     currentPage: page,

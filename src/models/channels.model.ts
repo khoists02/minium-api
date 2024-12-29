@@ -13,18 +13,12 @@ import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
 import sequelize from "@src/config/database";
 import User from "@src/models/user.model";
 
-/**
- * Database Relationships
-  1.	A User can have multiple Posts (One-to-Many).
-  2.	A User can have multiple Comments (One-to-Many).
-  3.	A Post can have multiple Comments (One-to-Many).
-  4.	Each Comment belongs to a User and a Post.
- */
-
 interface ChannelAttributes {
   id: string;
   name: string;
   description: string;
+  bannerUrl?: string;
+  deletedAt?: Date | string;
   userId: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -40,6 +34,8 @@ class Channel
   public name!: string;
   public description!: string;
   public userId!: string;
+  public bannerUrl?: string;
+  public deletedAt!: Date | string;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -50,22 +46,13 @@ Channel.init(
     name: { type: DataTypes.TEXT, allowNull: false },
     description: { type: DataTypes.TEXT, allowNull: false },
     userId: { type: DataTypes.UUID, allowNull: false, field: "user_id" },
-    // Map Sequelize's default timestamp fields to custom column names
-    createdAt: {
-      type: DataTypes.DATE,
-      field: "created_at", // Map to `created_at` in the database,
-      defaultValue: Date.now(),
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      field: "updated_at", // Map to `updated_at` in the database,
-      defaultValue: Date.now(),
-    },
+    bannerUrl: { type: DataTypes.STRING, allowNull: true, field: "banner_url" },
+    deletedAt: { type: DataTypes.DATE, allowNull: true, field: "deleted_at" },
   },
   {
     sequelize,
     tableName: "channels",
-    timestamps: true,
+    timestamps: false,
   },
 );
 

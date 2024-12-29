@@ -20,7 +20,10 @@ export const getUsers = async (req: Request, res: Response) => {
   // Fetch the total number of users
   const totalItems = await User.count();
 
-  const { skip, limit, totalPages, page } = getPaginationFromRequest(req, totalItems);
+  const { skip, limit, totalPages, page } = getPaginationFromRequest(
+    req,
+    totalItems,
+  );
 
   const users = await User.findAll({
     offset: skip,

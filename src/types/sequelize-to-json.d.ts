@@ -9,8 +9,8 @@
  * Confidentiality and Non-disclosure agreements explicitly covering such access.
  */
 
-declare module 'sequelize-to-json' {
-  import { Model, Instance } from 'sequelize';
+declare module "sequelize-to-json" {
+  import { Model, Instance } from "sequelize";
 
   type Template = Record<string, string>;
 

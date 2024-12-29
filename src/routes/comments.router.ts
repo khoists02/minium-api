@@ -14,7 +14,7 @@ import {
   createComment,
   deleteComment,
   updateComment,
-  getAllCommentBasedOnPost
+  getAllCommentBasedOnPost,
 } from "@src/controllers/comments.controller";
 
 const router = Router();

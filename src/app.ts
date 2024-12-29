@@ -18,12 +18,17 @@ import { Request, Response } from "express";
 // import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { validateToken } from "@src/middlewares/authenticatedUser";
-import { postRouter, userRouter, authRouter, commentRouter, publicRouter } from "@src/routes";
-
+import {
+  postRouter,
+  userRouter,
+  authRouter,
+  commentRouter,
+  publicRouter,
+} from "@src/routes";
 
 const app = express();
 
-console.log("Application allow origins :", appConfig.allowOrigins?.split(","))
+console.log("Application allow origins :", appConfig.allowOrigins?.split(","));
 
 // app.use(helmet({
 //   contentSecurityPolicy: {
@@ -85,8 +90,6 @@ app.use((req: Request, res: Response) => {
 //   // Generic server error
 //   res.status(500).json({ message: 'Internal Server Error', error: err.message });
 // });
-
-
 
 // Initialize the database
 initDb();

@@ -10,35 +10,35 @@
  */
 
 export interface IUserResponse {
-    id?: string;
-    name?: string;
-    email?: string;
-    updatedAt?: Date | string;
+  id?: string;
+  name?: string;
+  email?: string;
+  updatedAt?: Date | string;
 }
 
 export interface IPostResponse {
-    id?: string;
-    title?: string;
-    content?: string;
-    description?: string;
-    backgroundUrl?: string;
-    userId?: string;
+  id?: string;
+  title?: string;
+  content?: string;
+  description?: string;
+  backgroundUrl?: string;
+  userId?: string;
 }
 
 export interface IPublicPostResponse {
-    id?: string;
-    title?: string;
-    content?: string;
-    description?: string;
-    backgroundUrl?: string;
-    updatedAt?: Date | string;
-    countLikes?: number;
-    countComments?: number;
+  id?: string;
+  title?: string;
+  content?: string;
+  description?: string;
+  backgroundUrl?: string;
+  updatedAt?: Date | string;
+  countLikes?: number;
+  countComments?: number;
 }
 
 export interface ICommentResponse {
-    id?: string;
-    title?: string;
-    content?: string;
-    author?: IUserResponse;
+  id?: string;
+  title?: string;
+  content?: string;
+  author?: IUserResponse;
 }

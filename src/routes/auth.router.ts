@@ -10,7 +10,12 @@
  */
 
 import { Router } from "express";
-import { register, login, logout, refreshTokenCall } from "@src/controllers/auth/authentication.controller";
+import {
+  register,
+  login,
+  logout,
+  refreshTokenCall,
+} from "@src/controllers/auth/authentication.controller";
 
 const router = Router();
 

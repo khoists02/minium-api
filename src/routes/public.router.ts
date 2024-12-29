@@ -11,7 +11,12 @@
 
 import { Router } from "express";
 import { getAllCommentBasedOnPost } from "@src/controllers/comments.controller";
-import { getCountComments, getCountLikes, getPublicPost, getPublicPostDetails } from "@src/controllers/post.controller";
+import {
+  getCountComments,
+  getCountLikes,
+  getPublicPost,
+  getPublicPostDetails,
+} from "@src/controllers/post.controller";
 
 const router = Router();
 router.get("/public/posts/:postId/comments", getAllCommentBasedOnPost);

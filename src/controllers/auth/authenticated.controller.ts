@@ -14,57 +14,60 @@ import { getUserId } from "@src/utils/authentication";
 import { Request, Response } from "express";
 
 export const getAuthenticatedUser = async (req: Request, res: Response) => {
+  try {
+    const foundUser = await User.findByPk(getUserId(req));
 
-    try {
-        const foundUser = await User.findByPk(getUserId(req));
+    if (!foundUser)
+      res
+        .status(401)
+        .json({ message: "Unauthenticated User, User not found." });
 
-        if (!foundUser) res.status(401).json({ message: "Unauthenticated User, User not found." });
-
-        res.status(200).json({
-            account: {
-                id: foundUser?.id,
-                email: foundUser?.email,
-                name: foundUser?.name,
-                description: foundUser?.description,
-                photoUrl: foundUser?.photoUrl ? `${req.protocol}://${req.get("host")}${foundUser?.photoUrl}` : "",
-            }
-        })
-    } catch (error) {
-        res.status(500).json({ message: (error as any)?.message })
-    }
-}
+    res.status(200).json({
+      account: {
+        id: foundUser?.id,
+        email: foundUser?.email,
+        name: foundUser?.name,
+        description: foundUser?.description,
+        photoUrl: foundUser?.photoUrl
+          ? `${req.protocol}://${req.get("host")}${foundUser?.photoUrl}`
+          : "",
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: (error as any)?.message });
+  }
+};
 
 export const uploadProfile = async (req: Request, res: Response) => {
-    try {
-        const foundUser = await User.findByPk(getUserId(req));
-        // Create or update the user's profile with the uploaded image URL
-        const imageUrl = `/uploads/${req.file?.filename}`;
-        // Find or create is good one.
+  try {
+    const foundUser = await User.findByPk(getUserId(req));
+    // Create or update the user's profile with the uploaded image URL
+    const imageUrl = `/uploads/${req.file?.filename}`;
+    // Find or create is good one.
 
-        // @ts-ignore
-        foundUser.photoUrl = imageUrl;
+    // @ts-ignore
+    foundUser.photoUrl = imageUrl;
 
-        // @ts-ignore
-        await foundUser.save();
+    // @ts-ignore
+    await foundUser.save();
 
-        res.status(200).json({ message: "Profile image uploaded.", foundUser });
-
-    } catch (error) {
-        res.status(500).json({ message: (error as any)?.message });
-    }
-}
+    res.status(200).json({ message: "Profile image uploaded.", foundUser });
+  } catch (error) {
+    res.status(500).json({ message: (error as any)?.message });
+  }
+};
 
 export const updateDescription = async (req: Request, res: Response) => {
-    try {
-        const foundUser = await User.findByPk(getUserId(req));
-        // @ts-ignore
-        foundUser.description = req.body.description;
+  try {
+    const foundUser = await User.findByPk(getUserId(req));
+    // @ts-ignore
+    foundUser.description = req.body.description;
 
-        // @ts-ignore
-        await foundUser.save();
+    // @ts-ignore
+    await foundUser.save();
 
-        res.status(200).json({ message: "Profile image uploaded.", foundUser });
-    } catch (error) {
-        res.status(500).json({ message: (error as any)?.message });
-    }
-}
+    res.status(200).json({ message: "Profile image uploaded.", foundUser });
+  } catch (error) {
+    res.status(500).json({ message: (error as any)?.message });
+  }
+};

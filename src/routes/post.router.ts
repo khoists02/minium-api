@@ -10,7 +10,20 @@
  */
 
 import { Router } from "express";
-import { checkVisibleLike, createPost, deletePost, getAllPost, getAllPostByUserId, getMyPosts, getPostDetails, likePost, publishPost, unlikePost, updatePost, uploadImage } from "@src/controllers/post.controller";
+import {
+  checkVisibleLike,
+  createPost,
+  deletePost,
+  getAllPost,
+  getAllPostByUserId,
+  getMyPosts,
+  getPostDetails,
+  likePost,
+  publishPost,
+  unlikePost,
+  updatePost,
+  uploadImage,
+} from "@src/controllers/post.controller";
 import { upload } from "@src/middlewares/upload";
 const router = Router();
 

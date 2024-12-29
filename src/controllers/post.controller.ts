@@ -17,7 +17,7 @@ import User from "@src/models/user.model";
 import { PaginatedResponse } from "@src/types/pagination";
 import { IPostResponse, IPublicPostResponse } from "@src/types/user";
 import { getUserId } from "@src/utils/authentication";
-import { convertToUserResponse } from "@src/utils/conver";
+import { convertToUserResponse } from "@src/utils/convert";
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 

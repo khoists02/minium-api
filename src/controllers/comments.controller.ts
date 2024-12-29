@@ -18,7 +18,7 @@ import { Request, Response } from "express";
 import { getUserId } from "@src/utils/authentication";
 import { ICommentResponse } from "@src/types/user";
 import { sequelize } from "@src/database";
-import { convertToUserResponse } from "@src/utils/conver";
+import { convertToUserResponse } from "@src/utils/convert";
 
 const handleCountCommentInPostTransaction = async (
   title: string,

@@ -50,6 +50,56 @@ export const updateChannel = async (req: Request, res: Response) => {
   }
 };
 
+export const assignPostToChannel = async (req: Request, res: Response) => {
+  try {
+    const { channelId, postId } = req.params;
+
+    const foundChannel = await Channel.findByPk(channelId);
+
+    if (!foundChannel) res.status(400).json({ message: "Channel Not Found." });
+    else {
+      const postUpdated = await Post.findByPk(postId);
+      if (!postUpdated) res.status(400).json({ message: "Post Not Found." });
+      else {
+        postUpdated.channelId = foundChannel.id;
+        await postUpdated.save();
+
+        res.send(200).json({
+          message: "Assign post to channel " + foundChannel.name + " success",
+        });
+      }
+    }
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+export const reAssignPostFromChannel = async (req: Request, res: Response) => {
+  try {
+    const { channelId, postId } = req.params;
+
+    const foundChannel = await Channel.findByPk(channelId);
+
+    if (!foundChannel) res.status(400).json({ message: "Channel Not Found." });
+    else {
+      const postUpdated = await Post.findByPk(postId);
+      if (!postUpdated) res.status(400).json({ message: "Post Not Found." });
+      else {
+        // @ts-ignore
+        postUpdated.channelId = null;
+        await postUpdated.save();
+
+        res.send(200).json({
+          message:
+            "Re-Assign post to channel " + foundChannel.name + " success.",
+        });
+      }
+    }
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
 export const deleteChannels = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

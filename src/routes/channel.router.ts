@@ -10,8 +10,10 @@
  */
 
 import {
+  assignPostToChannel,
   createChannel,
   deleteChannels,
+  reAssignPostFromChannel,
   updateChannel,
 } from "@src/controllers/channels.controller";
 import { Router } from "express";
@@ -21,5 +23,8 @@ const router = Router();
 router.post("/channels", createChannel);
 router.put("/channels/:id", updateChannel);
 router.delete("/channels/:id", deleteChannels);
+
+router.put("/channels/:channelId/posts/:postId", assignPostToChannel);
+router.delete("/channels/:channelId/posts/:postId", reAssignPostFromChannel);
 
 export default router;

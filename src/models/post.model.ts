@@ -16,6 +16,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "@src/config/database";
 import User from "@src/models/user.model";
+import Channel from "./channels.model";
 
 // Define Post attributes
 interface PostAttributes {
@@ -28,6 +29,7 @@ interface PostAttributes {
   draft?: boolean;
   countLikes?: number;
   countComments?: number;
+  channelId?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -47,6 +49,7 @@ class Post
   public countLikes!: number;
   public countComments!: number;
   public userId!: string;
+  public channelId!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -79,6 +82,11 @@ Post.init(
       type: DataTypes.UUID,
       field: "user_id",
       allowNull: false,
+    },
+    channelId: {
+      type: DataTypes.UUID,
+      field: "channel_id",
+      allowNull: true,
     },
     draft: {
       type: DataTypes.BOOLEAN,
@@ -125,6 +133,16 @@ User.hasMany(Post, {
 Post.belongsTo(User, {
   foreignKey: "userId",
   as: "user",
+});
+
+Post.belongsTo(Channel, {
+  foreignKey: "channelId",
+  as: "channel",
+});
+
+Channel.hasMany(Post, {
+  foreignKey: "userId",
+  as: "posts",
 });
 
 export default Post;

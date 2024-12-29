@@ -9,18 +9,17 @@
  * Confidentiality and Non-disclosure agreements explicitly covering such access.
  */
 
-import authRouter from "./auth.router";
-import postRouter from "./post.router";
-import userRouter from "./user.router";
-import commentRouter from "./comments.router";
-import channelRouter from "./channel.router";
-import publicRouter from "./public.router";
+import {
+  createChannel,
+  deleteChannels,
+  updateChannel,
+} from "@src/controllers/channels.controller";
+import { Router } from "express";
 
-export {
-  authRouter,
-  channelRouter,
-  postRouter,
-  userRouter,
-  commentRouter,
-  publicRouter,
-};
+const router = Router();
+
+router.post("/channels", createChannel);
+router.put("/channels/:id", updateChannel);
+router.delete("/channels/:id", deleteChannels);
+
+export default router;

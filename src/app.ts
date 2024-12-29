@@ -24,6 +24,7 @@ import {
   authRouter,
   commentRouter,
   publicRouter,
+  channelRouter,
 } from "@src/routes";
 
 const app = express();
@@ -71,6 +72,10 @@ app.use("/api", validateToken, userRouter);
 app.use("/api", validateToken, postRouter);
 // @ts-ignore
 app.use("/api", validateToken, commentRouter);
+
+// @ts-ignore
+app.use("/api", validateToken, channelRouter);
+
 // Middleware: Handle Not Found Routes
 app.use((req: Request, res: Response) => {
   res.status(404).json({ error: "Not Found" });

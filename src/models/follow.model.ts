@@ -22,7 +22,7 @@ export enum FollowType {
 interface FollowAttributes {
   id: string;
   type: FollowType;
-  followerId: string;
+  followerId?: string | null;
   userId: string;
 }
 

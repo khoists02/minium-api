@@ -17,6 +17,7 @@ import {
   getPublicPost,
   getPublicPostDetails,
 } from "@src/controllers/post.controller";
+import { getMyChannels } from "@src/controllers/channels.controller";
 
 const router = Router();
 router.get("/public/posts/:postId/comments", getAllCommentBasedOnPost);
@@ -24,4 +25,5 @@ router.get("/public/posts", getPublicPost);
 router.get("/public/posts/:postId", getPublicPostDetails);
 router.get("/public/posts/:postId/likes", getCountLikes);
 router.get("/public/posts/:postId/comments", getCountComments);
+router.get("/public/channels", getMyChannels);
 export default router;

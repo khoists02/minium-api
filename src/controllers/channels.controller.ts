@@ -128,16 +128,18 @@ export const deleteChannels = async (req: Request, res: Response) => {
 };
 
 /**
- * Get all or get with dropdown mode => api/channels?mode=dropdown
+ * Get all or get with dropdown mode => api/public/channels?mode=dropdown
  * @param req
  * @param res
  */
 export const getMyChannels = async (req: Request, res: Response) => {
   try {
+    const { mode, userId } = req.query;
+
     const myChannels = await Channel.findAll({
-      where: { userId: getUserId(req) },
+      // @ts-ignore
+      where: { userId: userId },
     });
-    const { mode } = req.query;
 
     if (mode === "dropdown") {
       res.status(200).json({

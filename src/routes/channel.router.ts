@@ -14,7 +14,6 @@ import {
   createChannel,
   deleteChannels,
   getChannelsDetails,
-  getMyChannels,
   reAssignPostFromChannel,
   updateChannel,
 } from "@src/controllers/channels.controller";
@@ -23,7 +22,6 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/channels", getMyChannels);
 router.post("/channels", createChannel);
 router.put("/channels/:id", updateChannel);
 router.get("/channels/:id", getChannelsDetails);

@@ -154,6 +154,7 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
         {
           model: User,
           as: "user",
+          attributes: ["id", "name", "email", "description", "photoUrl"],
         },
       ],
     });
@@ -162,7 +163,7 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
     const response: PaginatedResponse<ICommentResponse[]> = {
       content: comments.map((cmt) => {
         // @ts-ignore
-        const userResponse = convertToUserResponse(cmt["user"] as User);
+        const userResponse = convertToUserResponse(req, cmt["user"] as User);
         return {
           id: cmt?.id,
           title: cmt?.title,

@@ -9,6 +9,7 @@
  * Confidentiality and Non-disclosure agreements explicitly covering such access.
  */
 
+import { convertPhotoUrlResponse } from "@src/helpers/convert";
 import User from "@src/models/user.model";
 import { getUserId } from "@src/utils/authentication";
 import { catchErrorToResponse } from "@src/utils/http";
@@ -29,9 +30,7 @@ export const getAuthenticatedUser = async (req: Request, res: Response) => {
         email: foundUser?.email,
         name: foundUser?.name,
         description: foundUser?.description,
-        photoUrl: foundUser?.photoUrl
-          ? `${req.protocol}://${req.get("host")}${foundUser?.photoUrl}`
-          : "",
+        photoUrl: convertPhotoUrlResponse(req, foundUser?.photoUrl),
       },
     });
   } catch (error) {

@@ -32,7 +32,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
   // Prepare paginated response
   const response: PaginatedResponse<IUserResponse[]> = {
-    content: users.map((u) => convertToUserResponse(u)),
+    content: users.map((u) => convertToUserResponse(req, u)),
     totalItems,
     totalPages,
     currentPage: page,

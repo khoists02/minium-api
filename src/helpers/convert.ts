@@ -7,22 +7,9 @@
  * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
  * from LKG.  Access to the source code contained herein is hereby forbidden to anyone except current LKG employees, managers or contractors who have executed
  * Confidentiality and Non-disclosure agreements explicitly covering such access.
- */
+ */ import { Request } from "express";
 
-import { IUserResponse } from "@src/data/user";
-import { convertPhotoUrlResponse } from "@src/helpers/convert";
-import User from "@src/models/user.model";
-import { Request } from "express";
-
-export const convertToUserResponse = (
-  req: Request,
-  user: User,
-): IUserResponse => {
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    photoUrl: convertPhotoUrlResponse(req, user?.photoUrl),
-    description: user.description,
-  };
+export const convertPhotoUrlResponse = (req: Request, photoUrl?: string) => {
+  if (!photoUrl) return "";
+  return `${req.protocol}://${req.get("host")}${photoUrl}`;
 };

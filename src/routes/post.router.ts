@@ -16,6 +16,7 @@ import {
   deletePost,
   getAllPost,
   getAllPostByUserId,
+  getAllPostsOfChannels,
   getMyPosts,
   getPostDetails,
   likePost,
@@ -33,6 +34,7 @@ router.get("/posts/:postId", getPostDetails);
 router.delete("/posts/:id", deletePost);
 router.put("/posts/:id/publish", publishPost);
 router.get("/posts", getAllPost);
+
 router.get("/users/:userId/posts", getAllPostByUserId);
 router.get("/myposts", getMyPosts);
 

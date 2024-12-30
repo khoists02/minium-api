@@ -9,6 +9,7 @@
  * Confidentiality and Non-disclosure agreements explicitly covering such access.
  */
 
+import { ChannelLight } from "@src/data/channel";
 import Channel from "@src/models/channels.model";
 import Post from "@src/models/post.model";
 import { getUserId } from "@src/utils/authentication";
@@ -126,12 +127,30 @@ export const deleteChannels = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Get all or get with dropdown mode => api/channels?mode=dropdown
+ * @param req
+ * @param res
+ */
 export const getMyChannels = async (req: Request, res: Response) => {
   try {
     const myChannels = await Channel.findAll({
       where: { userId: getUserId(req) },
     });
-    res.status(200).json({ content: myChannels });
+    const { mode } = req.query;
+
+    if (mode === "dropdown") {
+      res.status(200).json({
+        content: myChannels.map((c) => {
+          return {
+            id: c.id,
+            name: c.name,
+          } as ChannelLight;
+        }),
+      });
+    } else {
+      res.status(200).json({ content: myChannels });
+    }
   } catch (error) {
     catchErrorToResponse(res, error);
   }

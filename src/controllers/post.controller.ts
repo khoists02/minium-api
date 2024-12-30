@@ -59,7 +59,7 @@ export const getMyPosts = async (req: Request, res: Response) => {
         {
           model: User,
           as: "user",
-          attributes: ["id"],
+          attributes: ["id", "name", "email", "description", "photoUrl"],
         },
       ],
       where: whereConditions,
@@ -69,12 +69,7 @@ export const getMyPosts = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
       content: allPost.map((u) => {
-        return {
-          id: u?.id,
-          title: u?.title,
-          content: u?.content,
-          userId: u?.userId,
-        };
+        return convertToPostResponse(req, u);
       }),
       totalItems,
       totalPages,
@@ -263,6 +258,7 @@ export const getAllPost = async (req: Request, res: Response) => {
         {
           model: User,
           as: "user",
+          attributes: ["id", "name", "email", "description", "photoUrl"],
         },
       ],
       where: whereConditions,
@@ -273,14 +269,7 @@ export const getAllPost = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
       content: allPost.map((u) => {
-        return {
-          id: u?.id,
-          title: u?.title,
-          content: u?.content,
-          description: u?.description,
-          backgroundUrl: u?.backgroundUrl,
-          userId: u?.userId,
-        };
+        return convertToPostResponse(req, u);
       }),
       totalItems,
       totalPages,
@@ -311,7 +300,7 @@ export const getPostDetails = async (req: Request, res: Response) => {
       ],
     });
     res.status(200).json({
-      post: convertToPostResponse(foundPost as Post),
+      post: convertToPostResponse(req, foundPost as Post),
     });
   } catch (error) {
     catchErrorToResponse(res, error);
@@ -356,7 +345,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
         {
           model: User,
           as: "user",
-          attributes: ["id"],
+          attributes: ["id", "name", "email", "description", "photoUrl"],
         },
       ],
       where: whereConditions,
@@ -366,12 +355,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
       content: allPost.map((u) => {
-        return {
-          id: u?.id,
-          title: u?.title,
-          content: u?.content,
-          userId: u?.userId,
-        };
+        return convertToPostResponse(req, u);
       }),
       totalItems,
       totalPages,
@@ -390,9 +374,9 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
  * @param res
  */
 
-const convertToPostResponse = (foundPost: Post) => {
+const convertToPostResponse = (req: Request, foundPost: Post) => {
   // @ts-ignore
-  const userResponse = convertToUserResponse(foundPost["user"] as User);
+  const userResponse = convertToUserResponse(req, foundPost["user"] as User);
   const response = {
     id: foundPost?.id,
     createdAt: foundPost?.createdAt,
@@ -402,6 +386,7 @@ const convertToPostResponse = (foundPost: Post) => {
     description: foundPost?.description,
     countLikes: foundPost?.countLikes,
     countComments: foundPost?.countComments,
+    userId: foundPost?.userId,
     user: userResponse,
   };
   return response;
@@ -432,6 +417,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
         {
           model: User,
           as: "user",
+          attributes: ["id", "name", "email", "description", "photoUrl"],
         },
       ],
       where: whereConditions,
@@ -442,19 +428,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPublicPostResponse[]> = {
       content: allPost.map((u) => {
-        // @ts-ignore
-        const userResponse = convertToUserResponse(u["user"] as User);
-        return {
-          id: u?.id,
-          title: u?.title,
-          content: u?.content,
-          description: u?.description,
-          backgroundUrl: u?.backgroundUrl,
-          user: userResponse,
-          updatedAt: u.updatedAt,
-          countComments: u?.countComments,
-          countLikes: u?.countLikes,
-        };
+        return convertToPostResponse(req, u);
       }),
       totalItems,
       totalPages,
@@ -487,7 +461,7 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
     });
 
     res.status(200).json({
-      post: convertToPostResponse(foundPost as Post),
+      post: convertToPostResponse(req, foundPost as Post),
     });
   } catch (error) {
     catchErrorToResponse(res, error);
@@ -531,6 +505,56 @@ export const getCountLikes = async (req: Request, res: Response) => {
     const post = await Post.findByPk(req.params.postId);
 
     res.json({ count: post?.countLikes });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+export const getAllPostsOfChannels = async (req: Request, res: Response) => {
+  try {
+    const { title } = req.query;
+    const { channelId } = req.params;
+
+    const whereConditions: any = {};
+
+    if (title) {
+      whereConditions.title = { [Op.like]: `%${title}%` }; // Partial match
+    }
+    if (channelId) {
+      whereConditions.channelId = { [Op.eq]: channelId }; // Partial match
+    }
+
+    const totalItems = await Post.count({ where: whereConditions });
+
+    const { skip, limit, totalPages, page } = getPaginationFromRequest(
+      req,
+      totalItems,
+    );
+
+    const allPost = await Post.findAll({
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "email", "description", "photoUrl"],
+        },
+      ],
+      where: whereConditions,
+      offset: skip,
+      limit: limit,
+      order: [["updated_at", "DESC"]],
+    });
+    // Prepare paginated response
+    const response: PaginatedResponse<IPostResponse[]> = {
+      content: allPost.map((u) => {
+        return convertToPostResponse(req, u);
+      }),
+      totalItems,
+      totalPages,
+      currentPage: page,
+      pageSize: limit,
+    };
+    res.json(response);
   } catch (error) {
     catchErrorToResponse(res, error);
   }

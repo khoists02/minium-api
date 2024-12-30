@@ -310,13 +310,8 @@ export const getPostDetails = async (req: Request, res: Response) => {
         },
       ],
     });
-    // @ts-ignore
-    const userResponse = convertToUserResponse(foundPost["user"] as User);
     res.status(200).json({
-      post: {
-        ...foundPost,
-        user: userResponse,
-      },
+      post: convertToPostResponse(foundPost as Post),
     });
   } catch (error) {
     catchErrorToResponse(res, error);
@@ -394,6 +389,24 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
  * @param req
  * @param res
  */
+
+const convertToPostResponse = (foundPost: Post) => {
+  // @ts-ignore
+  const userResponse = convertToUserResponse(foundPost["user"] as User);
+  const response = {
+    id: foundPost?.id,
+    createdAt: foundPost?.createdAt,
+    updatedAt: foundPost?.updatedAt,
+    title: foundPost?.title,
+    content: foundPost?.content,
+    description: foundPost?.description,
+    countLikes: foundPost?.countLikes,
+    countComments: foundPost?.countComments,
+    user: userResponse,
+  };
+  return response;
+};
+
 export const getPublicPost = async (req: Request, res: Response) => {
   try {
     const { title } = req.query;
@@ -468,16 +481,13 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
         {
           model: User,
           as: "user",
+          attributes: ["id", "name", "email", "description", "photoUrl"],
         },
       ],
     });
-    // @ts-ignore
-    const userResponse = convertToUserResponse(foundPost["user"] as User);
+
     res.status(200).json({
-      post: {
-        ...foundPost,
-        user: userResponse,
-      },
+      post: convertToPostResponse(foundPost as Post),
     });
   } catch (error) {
     catchErrorToResponse(res, error);

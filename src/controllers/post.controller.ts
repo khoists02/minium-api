@@ -18,6 +18,7 @@ import { PaginatedResponse } from "@src/types/pagination";
 import { IPostResponse, IPublicPostResponse } from "@src/types/user";
 import { getUserId } from "@src/utils/authentication";
 import { convertToUserResponse } from "@src/utils/convert";
+import { catchErrorToResponse } from "@src/utils/http";
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 
@@ -82,7 +83,7 @@ export const getMyPosts = async (req: Request, res: Response) => {
     };
     res.json(response);
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -106,7 +107,7 @@ export const createPost = async (req: Request, res: Response) => {
       message: "Post created successfully",
     });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -127,7 +128,7 @@ export const updatePost = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Updated Post" });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -141,7 +142,7 @@ export const deletePost = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Updated Post" });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -201,7 +202,7 @@ export const likePost = async (req: Request, res: Response) => {
 
     res.status(200).json({ countLikes: newPost?.countLikes });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -216,7 +217,7 @@ export const unlikePost = async (req: Request, res: Response) => {
 
     res.status(200).json({ countLikes: newPost?.countLikes });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -231,7 +232,7 @@ export const publishPost = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Published Post" });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -288,7 +289,7 @@ export const getAllPost = async (req: Request, res: Response) => {
     };
     res.json(response);
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 /**
@@ -318,7 +319,7 @@ export const getPostDetails = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -384,7 +385,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
     };
     res.json(response);
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -449,7 +450,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
     };
     res.json(response);
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -479,7 +480,7 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -489,7 +490,7 @@ export const uploadImage = async (req: Request, res: Response) => {
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     res.json({ imgUrl: fileUrl });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -501,7 +502,7 @@ export const checkVisibleLike = async (req: Request, res: Response) => {
 
     res.json({ visible: count > 0 });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -511,7 +512,7 @@ export const getCountComments = async (req: Request, res: Response) => {
 
     res.json({ count: post?.countComments });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -521,6 +522,6 @@ export const getCountLikes = async (req: Request, res: Response) => {
 
     res.json({ count: post?.countLikes });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };

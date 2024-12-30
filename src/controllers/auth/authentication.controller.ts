@@ -20,6 +20,7 @@ import {
   setRefreshTokenCookie,
   verifyRefreshToken,
 } from "@src/utils/authentication";
+import { catchErrorToResponse } from "@src/utils/http";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -65,10 +66,7 @@ export const login = async (req: Request, res: Response) => {
     setRefreshTokenCookie(res, refreshToken);
     res.status(200).json({ token: accessToken });
   } catch (error) {
-    // if (error instanceof UniqueConstraintError) {
-    //     res.status(400).json({ message: (error as UniqueConstraintError).message });
-    // }
-    res.status(500).json({ error: "Internal Server Error" });
+    catchErrorToResponse(res, error);
   }
 };
 

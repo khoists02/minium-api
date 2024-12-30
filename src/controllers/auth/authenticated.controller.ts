@@ -11,6 +11,7 @@
 
 import User from "@src/models/user.model";
 import { getUserId } from "@src/utils/authentication";
+import { catchErrorToResponse } from "@src/utils/http";
 import { Request, Response } from "express";
 
 export const getAuthenticatedUser = async (req: Request, res: Response) => {
@@ -34,7 +35,7 @@ export const getAuthenticatedUser = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -53,7 +54,7 @@ export const uploadProfile = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Profile image uploaded.", foundUser });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -68,6 +69,6 @@ export const updateDescription = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Profile image uploaded.", foundUser });
   } catch (error) {
-    res.status(500).json({ message: (error as any)?.message });
+    catchErrorToResponse(res, error);
   }
 };

@@ -13,6 +13,8 @@ import {
   assignPostToChannel,
   createChannel,
   deleteChannels,
+  getChannelsDetails,
+  getMyChannels,
   reAssignPostFromChannel,
   updateChannel,
 } from "@src/controllers/channels.controller";
@@ -20,10 +22,13 @@ import { Router } from "express";
 
 const router = Router();
 
+router.get("/channels", getMyChannels);
 router.post("/channels", createChannel);
 router.put("/channels/:id", updateChannel);
+router.get("/channels/:id", getChannelsDetails);
 router.delete("/channels/:id", deleteChannels);
 
+// re/assign post to channels
 router.put("/channels/:channelId/posts/:postId", assignPostToChannel);
 router.delete("/channels/:channelId/posts/:postId", reAssignPostFromChannel);
 

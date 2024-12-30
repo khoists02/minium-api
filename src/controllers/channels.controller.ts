@@ -125,3 +125,23 @@ export const deleteChannels = async (req: Request, res: Response) => {
     catchErrorToResponse(res, error);
   }
 };
+
+export const getMyChannels = async (req: Request, res: Response) => {
+  try {
+    const myChannels = await Channel.findAll({
+      where: { userId: getUserId(req) },
+    });
+    res.status(200).json({ content: myChannels });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+export const getChannelsDetails = async (req: Request, res: Response) => {
+  try {
+    const details = await Channel.findByPk(req.params.id);
+    res.status(200).json({ channel: details });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};

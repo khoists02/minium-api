@@ -9,13 +9,22 @@
  * Confidentiality and Non-disclosure agreements explicitly covering such access.
  */
 
-import User from "@src/models/user.model";
-import { IUserResponse } from "@src/types/user";
+import {
+  assignPostToChannel,
+  createChannel,
+  deleteChannels,
+  reAssignPostFromChannel,
+  updateChannel,
+} from "@src/controllers/channels.controller";
+import { Router } from "express";
 
-export const convertUserToResponse = (user: User): IUserResponse => {
-    return {
-        id: user?.id,
-        email: user?.email,
-        name: user?.name,
-    }
-}
+const router = Router();
+
+router.post("/channels", createChannel);
+router.put("/channels/:id", updateChannel);
+router.delete("/channels/:id", deleteChannels);
+
+router.put("/channels/:channelId/posts/:postId", assignPostToChannel);
+router.delete("/channels/:channelId/posts/:postId", reAssignPostFromChannel);
+
+export default router;

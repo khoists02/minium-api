@@ -24,6 +24,7 @@ import Post from "@src/models/post.model";
 
 interface CommentAttributes {
   id: string;
+  title: string;
   content: string;
   userId: string;
   postId: string;
@@ -31,10 +32,14 @@ interface CommentAttributes {
   updatedAt?: Date;
 }
 
-interface CommentCreationAttributes extends Optional<CommentAttributes, "id"> { }
+interface CommentCreationAttributes extends Optional<CommentAttributes, "id"> {}
 
-class Comment extends Model<CommentAttributes, CommentCreationAttributes> implements CommentAttributes {
+class Comment
+  extends Model<CommentAttributes, CommentCreationAttributes>
+  implements CommentAttributes
+{
   public id!: string;
+  public title!: string;
   public content!: string;
   public userId!: string;
   public postId!: string;
@@ -45,25 +50,27 @@ class Comment extends Model<CommentAttributes, CommentCreationAttributes> implem
 Comment.init(
   {
     id: { type: DataTypes.UUID, defaultValue: UUIDV4, primaryKey: true },
+    title: { type: DataTypes.TEXT, allowNull: false },
     content: { type: DataTypes.TEXT, allowNull: false },
-    userId: { type: DataTypes.UUID, allowNull: false, field: "user_id", },
-    postId: { type: DataTypes.UUID, allowNull: false, field: "post_id", },
+    userId: { type: DataTypes.UUID, allowNull: false, field: "user_id" },
+    postId: { type: DataTypes.UUID, allowNull: false, field: "post_id" },
     // Map Sequelize's default timestamp fields to custom column names
     createdAt: {
       type: DataTypes.DATE,
       field: "created_at", // Map to `created_at` in the database,
-      defaultValue: Date.now()
+      defaultValue: Date.now(),
     },
     updatedAt: {
       type: DataTypes.DATE,
       field: "updated_at", // Map to `updated_at` in the database,
-      defaultValue: Date.now()
+      defaultValue: Date.now(),
     },
   },
   {
     sequelize,
     tableName: "comments",
-  }
+    timestamps: true,
+  },
 );
 
 // Associations

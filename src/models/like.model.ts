@@ -19,15 +19,20 @@ interface LikesAttributes {
   userId: string;
   postId: string;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
-interface LikesCreationAttributes extends Optional<LikesAttributes, "id"> { }
+interface LikesCreationAttributes extends Optional<LikesAttributes, "id"> {}
 
-class Likes extends Model<LikesAttributes, LikesCreationAttributes> implements LikesAttributes {
+class Likes
+  extends Model<LikesAttributes, LikesCreationAttributes>
+  implements LikesAttributes
+{
   public id!: string;
   public userId!: string;
   public postId!: string;
   public createdAt!: Date;
+  public updatedAt!: Date;
 }
 
 Likes.init(
@@ -51,12 +56,19 @@ Likes.init(
     createdAt: {
       type: DataTypes.DATE,
       field: "created_at", // Map to `created_at` in the database,
-      defaultValue: Date.now()
+      defaultValue: Date.now(),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: "updated_at", // Map to `updated_at` in the database,
+      defaultValue: Date.now(),
     },
   },
   {
     sequelize,
     tableName: "likes",
+    timestamps: true,
+    // timestamps: false, // Disable both createdAt and updatedAt
   },
 );
 

@@ -19,17 +19,24 @@ interface UserAttributes {
   name: string;
   email: string;
   password: string; // Foreign key to User
+  photoUrl: string;
+  description?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
+interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
   public id!: string;
   public name!: string;
   public email!: string;
   public password!: string;
+  public photoUrl!: string;
+  public description!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -53,27 +60,37 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    photoUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "photo_url",
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     // Map Sequelize's default timestamp fields to custom column names
     createdAt: {
       type: DataTypes.DATE,
       field: "created_at", // Map to `created_at` in the database,
-      defaultValue: Date.now()
+      defaultValue: Date.now(),
     },
     updatedAt: {
       type: DataTypes.DATE,
       field: "updated_at", // Map to `updated_at` in the database,
-      defaultValue: Date.now()
+      defaultValue: Date.now(),
     },
   },
   {
     sequelize,
     tableName: "users",
+    timestamps: true,
     indexes: [
       {
         unique: true,
-        fields: ["name", "email"]
-      }
-    ]
+        fields: ["name", "email"],
+      },
+    ],
   },
 );
 

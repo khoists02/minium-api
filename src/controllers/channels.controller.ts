@@ -159,6 +159,22 @@ export const getMyChannels = async (req: Request, res: Response) => {
   }
 };
 
+export const getChannelsAllowed = async (req: Request, res: Response) => {
+  try {
+    const myChannels = await Channel.findAll();
+    res.status(200).json({
+      content: myChannels.map((c) => {
+        return {
+          id: c.id,
+          name: c.name,
+        } as ChannelLight;
+      }),
+    });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
 export const getChannelsDetails = async (req: Request, res: Response) => {
   try {
     const details = await Channel.findByPk(req.params.id);

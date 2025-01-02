@@ -10,6 +10,7 @@
  */
 
 import { sequelize } from "@src/database";
+import { convertPhotoUrlResponse } from "@src/helpers/convert";
 import { getPaginationFromRequest } from "@src/helpers/pagination";
 import Channel from "@src/models/channels.model";
 import Likes from "@src/models/like.model";
@@ -314,6 +315,11 @@ export const getPostDetails = async (req: Request, res: Response) => {
           as: "user",
           attributes: ["id", "email", "name", "photoUrl", "description"],
         },
+        {
+          model: Channel,
+          as: "channel",
+          attributes: ["id", "name", "bannerUrl"],
+        },
       ],
     });
     res.status(200).json({
@@ -394,6 +400,14 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
 const convertToPostResponse = (req: Request, foundPost: Post) => {
   // @ts-ignore
   const userResponse = convertToUserResponse(req, foundPost["user"] as User);
+  // @ts-ignore
+  const channelResponse = foundPost ? foundPost["channel"] : null;
+  if (channelResponse?.bannerUrl) {
+    channelResponse.bannerUrl = convertPhotoUrlResponse(
+      req,
+      channelResponse.bannerUrl,
+    );
+  }
   const response = {
     id: foundPost?.id,
     createdAt: foundPost?.createdAt,
@@ -405,6 +419,8 @@ const convertToPostResponse = (req: Request, foundPost: Post) => {
     countComments: foundPost?.countComments,
     userId: foundPost?.userId,
     user: userResponse,
+    channel: channelResponse,
+    publishedAt: foundPost?.publishedAt,
   };
   return response;
 };
@@ -473,6 +489,11 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
           model: User,
           as: "user",
           attributes: ["id", "name", "email", "description", "photoUrl"],
+        },
+        {
+          model: Channel,
+          as: "channel",
+          attributes: ["id", "name", "bannerUrl"],
         },
       ],
     });

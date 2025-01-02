@@ -12,12 +12,15 @@
 import {
   assignPostToChannel,
   createChannel,
+  deleteChannelBanner,
   deleteChannels,
   getChannelsDetails,
   reAssignPostFromChannel,
   updateChannel,
+  uploadChannelBanner,
 } from "@src/controllers/channels.controller";
 import { getAllPostsOfChannels } from "@src/controllers/post.controller";
+import { upload } from "@src/middlewares/upload";
 import { Router } from "express";
 
 const router = Router();
@@ -31,5 +34,14 @@ router.get("/channels/:channelId/posts", getAllPostsOfChannels);
 // re/assign post to channels
 router.put("/channels/:channelId/posts/:postId", assignPostToChannel);
 router.delete("/channels/:channelId/posts/:postId", reAssignPostFromChannel);
+
+// upload banner
+// @ts-ignore
+router.post(
+  "/channels/:id/banner",
+  upload.single("channelBanner"),
+  uploadChannelBanner,
+);
+router.delete("/channels/:id/banner", deleteChannelBanner);
 
 export default router;

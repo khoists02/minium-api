@@ -157,6 +157,7 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
           attributes: ["id", "name", "email", "description", "photoUrl"],
         },
       ],
+      order: [["updatedAt", "DESC"]],
     });
 
     // Prepare paginated response
@@ -169,6 +170,7 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
           title: cmt?.title,
           content: cmt?.content,
           author: userResponse,
+          lastUpdatedAt: cmt?.updatedAt || cmt?.createdAt,
         };
       }),
       totalItems,

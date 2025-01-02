@@ -32,6 +32,7 @@ interface PostAttributes {
   channelId?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
+  publishedAt?: Date;
 }
 
 interface PostCreationAttributes extends Optional<PostAttributes, "id"> {}
@@ -52,6 +53,7 @@ class Post
   public channelId!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
+  public publishedAt!: Date;
 }
 
 Post.init(
@@ -115,6 +117,11 @@ Post.init(
       type: DataTypes.DATE,
       field: "updated_at", // Map to `updated_at` in the database,
       defaultValue: Date.now(),
+    },
+    publishedAt: {
+      type: DataTypes.DATE,
+      field: "published_at", // Map to `updated_at` in the database,
+      allowNull: true,
     },
   },
   {

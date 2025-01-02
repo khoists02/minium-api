@@ -11,6 +11,7 @@
 
 import { sequelize } from "@src/database";
 import { getPaginationFromRequest } from "@src/helpers/pagination";
+import Channel from "@src/models/channels.model";
 import Likes from "@src/models/like.model";
 import Post from "@src/models/post.model";
 import User from "@src/models/user.model";
@@ -216,16 +217,32 @@ export const unlikePost = async (req: Request, res: Response) => {
   }
 };
 
-export const publishPost = async (req: Request, res: Response) => {
+export const publishPost = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
   try {
     const { id } = req.params;
+    const { channelId } = req.body;
+
+    const foundChannel = await Channel.findByPk(channelId);
+
+    if (!foundChannel)
+      return res.status(400).json({ message: "Channel was deleted." });
 
     const foundPost = await Post.findByPk(id);
 
-    if (foundPost) foundPost.draft = false;
+    if (!foundPost) return res.status(400).json({ message: "Bad Request." });
+
+    foundPost.draft = false;
+    foundPost.channelId = foundChannel?.id;
+    foundPost.publishedAt = new Date();
+
     await foundPost?.save();
 
-    res.status(200).json({ message: "Published Post" });
+    res
+      .status(200)
+      .json({ message: `Published Post on channel ${foundChannel?.name}` });
   } catch (error) {
     catchErrorToResponse(res, error);
   }
@@ -264,7 +281,7 @@ export const getAllPost = async (req: Request, res: Response) => {
       where: whereConditions,
       offset: skip,
       limit: limit,
-      order: [["updated_at", "DESC"]],
+      order: [["updatedAt", "DESC"]],
     });
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
@@ -421,9 +438,9 @@ export const getPublicPost = async (req: Request, res: Response) => {
         },
       ],
       where: whereConditions,
-      order: [["updatedAt", "ASC"]],
       offset: skip,
       limit: limit,
+      order: [["updatedAt", "DESC"]],
     });
     // Prepare paginated response
     const response: PaginatedResponse<IPublicPostResponse[]> = {

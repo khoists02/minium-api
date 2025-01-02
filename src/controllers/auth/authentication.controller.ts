@@ -41,30 +41,33 @@ export const login = async (req: Request, res: Response) => {
     const body = req.body;
 
     const foundUser = await User.findOne({ where: { email: body.email } });
-
+    // why i used if else for this flow. cause the nodejs express when function response send to client if does not automatically terminate.
+    // or we can use return with function Promise<any> for response type.
+    // default is Promise<void>
     if (!foundUser) {
       res.status(401).json({ message: "User not found." });
+    } else {
+      const validPassword = await isValidPassword(
+        body.password,
+        foundUser?.password || "",
+      );
+      if (!validPassword) {
+        res.status(401).json({ message: "Invalid Credentials." });
+      } else {
+        const accessToken = generateAccessToken({
+          id: foundUser?.id,
+          username: foundUser?.email,
+        });
+        const refreshToken = generateRefreshToken({
+          id: foundUser?.id,
+          username: foundUser?.email,
+        });
+        // TODO: set cookies to every request headers.
+        setAccessTokenCookie(res, accessToken);
+        setRefreshTokenCookie(res, refreshToken);
+        res.status(200).json({ token: accessToken });
+      }
     }
-    const validPassword = await isValidPassword(
-      body.password,
-      foundUser?.password || "",
-    );
-    if (!validPassword) {
-      res.status(401).json({ message: "Invalid Credentials." });
-    }
-
-    const accessToken = generateAccessToken({
-      id: foundUser?.id,
-      username: foundUser?.email,
-    });
-    const refreshToken = generateRefreshToken({
-      id: foundUser?.id,
-      username: foundUser?.email,
-    });
-    // TODO: set cookies to every request headers.
-    setAccessTokenCookie(res, accessToken);
-    setRefreshTokenCookie(res, refreshToken);
-    res.status(200).json({ token: accessToken });
   } catch (error) {
     catchErrorToResponse(res, error);
   }

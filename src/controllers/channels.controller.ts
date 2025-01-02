@@ -10,6 +10,7 @@
  */
 
 import { ChannelLight } from "@src/data/channel";
+import { convertPhotoUrlResponse } from "@src/helpers/convert";
 import Channel from "@src/models/channels.model";
 import Post from "@src/models/post.model";
 import { getUserId } from "@src/utils/authentication";
@@ -161,7 +162,52 @@ export const getMyChannels = async (req: Request, res: Response) => {
 export const getChannelsDetails = async (req: Request, res: Response) => {
   try {
     const details = await Channel.findByPk(req.params.id);
-    res.status(200).json({ channel: details });
+    const finalBannerUrl = convertPhotoUrlResponse(req, details?.bannerUrl);
+    res.status(200).json({
+      channel: {
+        ...details,
+        bannerUrl: finalBannerUrl,
+      },
+    });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+export const uploadChannelBanner = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  try {
+    const foundChannel = await Channel.findByPk(req.params.id);
+    const url = `/uploads/${req.file?.filename}`;
+    if (!foundChannel)
+      return res.status(400).json({ message: "Channel not found." });
+
+    if (foundChannel) {
+      foundChannel.bannerUrl = url;
+    }
+
+    await foundChannel.save();
+
+    res.status(200).json({ message: "Channel banner uploaded." });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+export const deleteChannelBanner = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  try {
+    const foundChannel = await Channel.findByPk(req.params.id);
+    if (!foundChannel)
+      return res.status(400).json({ message: "Channel not found." });
+
+    foundChannel.bannerUrl = "";
+    await foundChannel.save();
+    res.status(200).json({ message: "Delete banner success." });
   } catch (error) {
     catchErrorToResponse(res, error);
   }

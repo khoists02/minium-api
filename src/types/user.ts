@@ -41,4 +41,5 @@ export interface ICommentResponse {
   title?: string;
   content?: string;
   author?: IUserResponse;
+  lastUpdatedAt?: Date | string;
 }

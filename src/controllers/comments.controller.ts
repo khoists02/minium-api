@@ -17,71 +17,34 @@ import { PaginatedResponse } from "@src/types/pagination";
 import { Request, Response } from "express";
 import { getUserId } from "@src/utils/authentication";
 import { ICommentResponse } from "@src/types/user";
-import { sequelize } from "@src/database";
 import { convertToUserResponse } from "@src/utils/convert";
-
-const handleCountCommentInPostTransaction = async (
-  title: string,
-  content: string,
-  postId: string,
-  userId: string,
-  commentId: string,
-  increase = true,
-) => {
-  // Start a transaction
-  const transaction = await sequelize.transaction();
-
-  try {
-    const foundPost = await Post.findByPk(postId);
-
-    if (!foundPost) {
-      throw new Error("Post not found");
-    }
-
-    if (increase)
-      await Comment.create({ title, content, postId, userId }, { transaction });
-    else {
-      const foundComment = await Comment.findOne({
-        where: { postId, userId, id: commentId },
-        transaction,
-      });
-      await foundComment?.destroy({ transaction });
-    }
-
-    // Increase the likes count
-    if (increase) foundPost.countComments += 1;
-    else foundPost.countComments -= 1;
-
-    // Save the changes
-    await foundPost.save({ transaction });
-
-    await transaction.commit();
-    return foundPost;
-  } catch (error) {
-    await transaction.rollback();
-  }
-};
+import { runInTransaction } from "@src/helpers/transaction";
+import { Transaction } from "sequelize";
+import { catchErrorToResponse } from "@src/utils/http";
 
 //API: /posts/:postId/comments
 export const createComment = async (req: Request, res: Response) => {
   try {
     const { postId } = req.params;
     const userId = getUserId(req);
+    const { title, content } = req.body;
 
-    handleCountCommentInPostTransaction(
-      req.body.title,
-      req.body.content,
-      postId,
-      userId,
-      "",
-      true,
-    );
+    runInTransaction(false, async (t: Transaction) => {
+      const foundPost = await Post.findByPk(postId, { transaction: t });
+      if (!foundPost)
+        return res.status(400).json({ message: "Post not found." });
+      await Comment.create(
+        { title, content, postId, userId },
+        { transaction: t },
+      );
 
-    res.status(201).json({ message: `New Comment is created.` });
+      foundPost.countComments += 1;
+      await foundPost.save();
+      t.commit();
+      res.status(201).json({ message: `New Comment is created.` });
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: (error as any)?.message || "Internal server error." });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -109,9 +72,7 @@ export const updateComment = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Comment can not found." });
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: (error as any)?.message || "Internal server error." });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -119,18 +80,28 @@ export const updateComment = async (req: Request, res: Response) => {
 export const deleteComment = async (req: Request, res: Response) => {
   try {
     const { postId, commentId } = req.params;
-    handleCountCommentInPostTransaction(
-      "",
-      "",
-      postId,
-      getUserId(req),
-      commentId,
-      true,
-    );
+
+    runInTransaction(false, async (t: Transaction) => {
+      const foundPost = await Post.findByPk(postId, { transaction: t });
+
+      if (!foundPost)
+        return res.status(400).json({ message: "Post not found." });
+
+      const foundComment = await Comment.findOne({
+        where: { postId, userId: getUserId(req), id: commentId },
+        transaction: t,
+      });
+      await foundComment?.destroy({ transaction: t });
+
+      foundPost.countComments -= 1;
+      await foundPost.save();
+
+      await t.commit();
+
+      res.status(200).json({ message: "Comment is deleted." });
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: (error as any)?.message || "Internal server error." });
+    catchErrorToResponse(res, error);
   }
 };
 
@@ -180,8 +151,6 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
     };
     res.json(response);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: (error as any)?.message || "Internal server error." });
+    catchErrorToResponse(res, error);
   }
 };

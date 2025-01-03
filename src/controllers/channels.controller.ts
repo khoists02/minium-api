@@ -181,7 +181,8 @@ export const getChannelsDetails = async (req: Request, res: Response) => {
     const finalBannerUrl = convertPhotoUrlResponse(req, details?.bannerUrl);
     res.status(200).json({
       channel: {
-        ...details,
+        id: details?.id,
+        name: details?.name,
         bannerUrl: finalBannerUrl,
       },
     });

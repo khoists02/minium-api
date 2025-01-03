@@ -21,6 +21,8 @@ import { convertToUserResponse } from "@src/utils/convert";
 import { runInTransaction } from "@src/helpers/transaction";
 import { Transaction } from "sequelize";
 import { catchErrorToResponse } from "@src/utils/http";
+import CommentLikes from "@src/models/comment_likes.model";
+import { IUserResponse } from "@src/data/user";
 
 //API: /posts/:postId/comments
 export const createComment = async (req: Request, res: Response) => {
@@ -39,7 +41,7 @@ export const createComment = async (req: Request, res: Response) => {
       );
 
       foundPost.countComments += 1;
-      await foundPost.save();
+      await foundPost.save({ transaction: t });
       t.commit();
       res.status(201).json({ message: `New Comment is created.` });
     });
@@ -94,7 +96,7 @@ export const deleteComment = async (req: Request, res: Response) => {
       await foundComment?.destroy({ transaction: t });
 
       foundPost.countComments -= 1;
-      await foundPost.save();
+      await foundPost.save({ transaction: t });
 
       await t.commit();
 
@@ -106,7 +108,10 @@ export const deleteComment = async (req: Request, res: Response) => {
 };
 
 //GetMapping /posts/:postId/comments
-export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
+export const getAllCommentBasedOnPost = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
   try {
     const { postId } = req.params;
 
@@ -131,25 +136,117 @@ export const getAllCommentBasedOnPost = async (req: Request, res: Response) => {
       order: [["updatedAt", "DESC"]],
     });
 
+    const finalComments: ICommentResponse[] = [];
+
+    // handle get visible like
+    for (let i = 0; i < comments.length; i++) {
+      // @ts-ignore
+      const foundUser = comments[i] ? comments[i]["user"] : null;
+      const userResponse = foundUser
+        ? convertToUserResponse(req, foundUser)
+        : null;
+      const visibleLike = await getVisibleLikeInComment(
+        getUserId(req),
+        postId,
+        comments[i].id,
+      );
+
+      finalComments.push({
+        id: comments[i]?.id,
+        title: comments[i]?.title,
+        content: comments[i]?.content,
+        author: userResponse as IUserResponse,
+        lastUpdatedAt: comments[i]?.updatedAt || comments[i]?.createdAt,
+        visibleLike: visibleLike,
+        countLikes: comments[i]?.countLikes || 0,
+      });
+    }
     // Prepare paginated response
     const response: PaginatedResponse<ICommentResponse[]> = {
-      content: comments.map((cmt) => {
-        // @ts-ignore
-        const userResponse = convertToUserResponse(req, cmt["user"] as User);
-        return {
-          id: cmt?.id,
-          title: cmt?.title,
-          content: cmt?.content,
-          author: userResponse,
-          lastUpdatedAt: cmt?.updatedAt || cmt?.createdAt,
-        };
-      }),
+      content: finalComments,
       totalItems,
       totalPages,
       currentPage: page,
       pageSize: limit,
     };
-    res.json(response);
+    return res.json(response);
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+// this method will check this comment was liked by current user.
+export const getVisibleLikeInComment = async (
+  userId: string,
+  postId: string,
+  commentId: string,
+): Promise<boolean> => {
+  try {
+    const foundComment = await CommentLikes.findOne({
+      where: {
+        userId,
+        postId,
+        commentId,
+      },
+    });
+
+    return Promise.resolve(!!foundComment);
+  } catch (error) {
+    return Promise.reject();
+  }
+};
+
+//PUT /public/posts/:postId/comments/:commentId
+export const handleLikeOrUnlikeComment = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { liked, userId } = req.body;
+    const { postId, commentId } = req.params;
+
+    runInTransaction(false, async (t: Transaction) => {
+      const foundPost = await Post.findByPk(postId, { transaction: t });
+      if (!foundPost)
+        return res.send(400).json({ message: "Bad request, Not found post." });
+
+      const foundComment = await Comment.findByPk(commentId, {
+        transaction: t,
+      });
+
+      if (!foundComment)
+        return res
+          .send(400)
+          .json({ message: "Bad request, Comment was delete." });
+
+      // handle create/destroy comment likes
+
+      if (!liked) {
+        await CommentLikes.create(
+          { userId: userId, postId: postId, commentId: commentId },
+          { transaction: t },
+        );
+
+        foundComment.countLikes += 1;
+
+        await foundComment.save({ transaction: t });
+      } else {
+        const foundCommentLikes = await CommentLikes.findOne({
+          where: { userId, postId, commentId },
+          transaction: t,
+        });
+
+        if (foundCommentLikes) {
+          await foundCommentLikes.destroy({ transaction: t });
+          foundComment.countLikes -= 1;
+          await foundComment.save({ transaction: t });
+        }
+      }
+      await t.commit();
+      res.status(200).json({
+        message: `User ${userId} like this comment ${commentId} on Post:${postId}`,
+      });
+    });
   } catch (error) {
     catchErrorToResponse(res, error);
   }

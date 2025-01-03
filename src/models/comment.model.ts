@@ -28,6 +28,7 @@ interface CommentAttributes {
   content: string;
   userId: string;
   postId: string;
+  countLikes?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -43,6 +44,7 @@ class Comment
   public content!: string;
   public userId!: string;
   public postId!: string;
+  public countLikes!: number;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -54,6 +56,12 @@ Comment.init(
     content: { type: DataTypes.TEXT, allowNull: false },
     userId: { type: DataTypes.UUID, allowNull: false, field: "user_id" },
     postId: { type: DataTypes.UUID, allowNull: false, field: "post_id" },
+    countLikes: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      defaultValue: 0,
+      field: "count_likes",
+    },
     // Map Sequelize's default timestamp fields to custom column names
     createdAt: {
       type: DataTypes.DATE,

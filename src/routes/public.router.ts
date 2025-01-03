@@ -10,7 +10,10 @@
  */
 
 import { Router } from "express";
-import { getAllCommentBasedOnPost } from "@src/controllers/comments.controller";
+import {
+  getAllCommentBasedOnPost,
+  handleLikeOrUnlikeComment,
+} from "@src/controllers/comments.controller";
 import {
   getCountComments,
   getCountLikes,
@@ -30,4 +33,8 @@ router.get("/public/posts/:postId/likes", getCountLikes);
 router.get("/public/posts/:postId/comments", getCountComments);
 router.get("/public/channels", getMyChannels);
 router.get("/public/channels-allowed", getChannelsAllowed);
+router.put(
+  "/public/posts/:postId/comments/:commentId",
+  handleLikeOrUnlikeComment,
+);
 export default router;

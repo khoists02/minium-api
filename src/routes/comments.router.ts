@@ -15,6 +15,9 @@ import {
   deleteComment,
   updateComment,
   getAllCommentBasedOnPost,
+  replyComment,
+  updateReplyComment,
+  deleteReplyComment,
 } from "@src/controllers/comments.controller";
 
 const router = Router();
@@ -23,5 +26,10 @@ router.post("/posts/:postId/comments", createComment);
 router.put("/posts/:postId/comments/:commentId", updateComment);
 router.delete("/posts/:postId/comments/:commentId", deleteComment);
 router.get("/posts/:postId/comments", getAllCommentBasedOnPost);
+
+// replies handle
+router.post("/comments/:commentId/replies", replyComment);
+router.put("/comments/:commentId/replies/:id", updateReplyComment);
+router.delete("/comments/:commentId/replies/:id", deleteReplyComment);
 
 export default router;

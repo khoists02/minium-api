@@ -11,57 +11,39 @@
 
 import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
 import sequelize from "@src/config/database";
-import User from "@src/models/user.model";
-import Post from "@src/models/post.model";
+import Comment from "./comment.model";
+import User from "./user.model";
 
-interface CommentAttributes {
+interface CommentReplyAttributes {
   id: string;
-  title: string;
+  commentId: string;
   content: string;
   userId: string;
-  postId: string;
-  countLikes?: number;
-  countReplies?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface CommentCreationAttributes extends Optional<CommentAttributes, "id"> {}
+interface CommentReplyCreationAttributes
+  extends Optional<CommentReplyAttributes, "id"> {}
 
-class Comment
-  extends Model<CommentAttributes, CommentCreationAttributes>
-  implements CommentAttributes
+class CommentReply
+  extends Model<CommentReplyAttributes, CommentReplyCreationAttributes>
+  implements CommentReplyAttributes
 {
   public id!: string;
-  public title!: string;
   public content!: string;
+  public commentId!: string;
   public userId!: string;
-  public postId!: string;
-  public countLikes!: number;
-  public countReplies!: number;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
 
-Comment.init(
+CommentReply.init(
   {
     id: { type: DataTypes.UUID, defaultValue: UUIDV4, primaryKey: true },
-    title: { type: DataTypes.TEXT, allowNull: false },
-    content: { type: DataTypes.TEXT, allowNull: false },
+    commentId: { type: DataTypes.UUID, allowNull: false, field: "comment_id" },
     userId: { type: DataTypes.UUID, allowNull: false, field: "user_id" },
-    postId: { type: DataTypes.UUID, allowNull: false, field: "post_id" },
-    countLikes: {
-      type: DataTypes.NUMBER,
-      allowNull: true,
-      defaultValue: 0,
-      field: "count_likes",
-    },
-    countReplies: {
-      type: DataTypes.NUMBER,
-      allowNull: true,
-      defaultValue: 0,
-      field: "count_replies",
-    },
+    content: { type: DataTypes.TEXT, allowNull: false },
     // Map Sequelize's default timestamp fields to custom column names
     createdAt: {
       type: DataTypes.DATE,
@@ -76,16 +58,14 @@ Comment.init(
   },
   {
     sequelize,
-    tableName: "comments",
-    timestamps: true,
+    tableName: "comment_replies",
   },
 );
 
 // Associations
-Comment.belongsTo(User, { foreignKey: "userId", as: "user" });
-User.hasMany(Comment, { foreignKey: "userId", as: "comments" });
+Comment.hasMany(CommentReply, { foreignKey: "commentId", onDelete: "CASCADE" });
+CommentReply.belongsTo(Comment, { foreignKey: "commentId" });
 
-Comment.belongsTo(Post, { foreignKey: "postId", as: "post" });
-Post.hasMany(Comment, { foreignKey: "postId", as: "comments" });
+CommentReply.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-export default Comment;
+export default CommentReply;

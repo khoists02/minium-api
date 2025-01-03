@@ -43,5 +43,6 @@ export interface ICommentResponse {
   author?: IUserResponse;
   lastUpdatedAt?: Date | string;
   countLikes?: number;
+  countReplies?: number;
   visibleLike?: boolean;
 }

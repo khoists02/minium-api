@@ -12,6 +12,7 @@
 import { Router } from "express";
 import {
   getAllCommentBasedOnPost,
+  getAllReplies,
   handleLikeOrUnlikeComment,
 } from "@src/controllers/comments.controller";
 import {
@@ -37,4 +38,7 @@ router.put(
   "/public/posts/:postId/comments/:commentId",
   handleLikeOrUnlikeComment,
 );
+// GET ALL REPLIES OF COMMENT
+
+router.get("/public/comments/:commentId/replies", getAllReplies);
 export default router;

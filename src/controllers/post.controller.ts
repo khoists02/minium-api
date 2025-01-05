@@ -15,6 +15,7 @@ import { getPaginationFromRequest } from "@src/helpers/pagination";
 import Channel from "@src/models/channels.model";
 import Likes from "@src/models/like.model";
 import Post from "@src/models/post.model";
+import PostFavorite from "@src/models/post_favorite.model";
 import User from "@src/models/user.model";
 import { PaginatedResponse } from "@src/types/pagination";
 import { IPostResponse, IPublicPostResponse } from "@src/types/user";
@@ -62,6 +63,11 @@ export const getMyPosts = async (req: Request, res: Response) => {
           model: User,
           as: "user",
           attributes: ["id", "name", "email", "description", "photoUrl"],
+        },
+        {
+          model: Channel,
+          as: "channel",
+          attributes: ["id", "name", "description", "bannerUrl"],
         },
       ],
       where: whereConditions,
@@ -278,6 +284,11 @@ export const getAllPost = async (req: Request, res: Response) => {
           as: "user",
           attributes: ["id", "name", "email", "description", "photoUrl"],
         },
+        {
+          model: Channel,
+          as: "channel",
+          attributes: ["id", "name", "description", "bannerUrl"],
+        },
       ],
       where: whereConditions,
       offset: skip,
@@ -318,7 +329,7 @@ export const getPostDetails = async (req: Request, res: Response) => {
         {
           model: Channel,
           as: "channel",
-          attributes: ["id", "name", "bannerUrl"],
+          attributes: ["id", "name", "description", "bannerUrl"],
         },
       ],
     });
@@ -370,6 +381,11 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
           as: "user",
           attributes: ["id", "name", "email", "description", "photoUrl"],
         },
+        {
+          model: Channel,
+          as: "channel",
+          attributes: ["id", "name", "description", "bannerUrl"],
+        },
       ],
       where: whereConditions,
       offset: skip,
@@ -397,7 +413,10 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
  * @param res
  */
 
-const convertToPostResponse = (req: Request, foundPost: Post) => {
+const convertToPostResponse = (
+  req: Request,
+  foundPost: Post,
+): IPostResponse => {
   // @ts-ignore
   const userResponse = convertToUserResponse(req, foundPost["user"] as User);
   // @ts-ignore
@@ -410,8 +429,6 @@ const convertToPostResponse = (req: Request, foundPost: Post) => {
   }
   const response = {
     id: foundPost?.id,
-    createdAt: foundPost?.createdAt,
-    updatedAt: foundPost?.updatedAt,
     title: foundPost?.title,
     content: foundPost?.content,
     description: foundPost?.description,
@@ -421,6 +438,10 @@ const convertToPostResponse = (req: Request, foundPost: Post) => {
     user: userResponse,
     channel: channelResponse,
     publishedAt: foundPost?.publishedAt,
+    createdAt: foundPost?.createdAt,
+    updatedAt: foundPost?.updatedAt,
+    // @ts-ignore
+    isFavorite: !!foundPost["favorite"],
   };
   return response;
 };
@@ -452,12 +473,23 @@ export const getPublicPost = async (req: Request, res: Response) => {
           as: "user",
           attributes: ["id", "name", "email", "description", "photoUrl"],
         },
+        {
+          model: Channel,
+          as: "channel",
+          attributes: ["id", "name", "description", "bannerUrl"],
+        },
+        {
+          model: PostFavorite,
+          as: "favorite",
+          attributes: ["id"],
+        },
       ],
       where: whereConditions,
       offset: skip,
       limit: limit,
       order: [["updatedAt", "DESC"]],
     });
+
     // Prepare paginated response
     const response: PaginatedResponse<IPublicPostResponse[]> = {
       content: allPost.map((u) => {
@@ -493,7 +525,7 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
         {
           model: Channel,
           as: "channel",
-          attributes: ["id", "name", "bannerUrl"],
+          attributes: ["id", "name", "description", "bannerUrl"],
         },
       ],
     });
@@ -593,6 +625,21 @@ export const getAllPostsOfChannels = async (req: Request, res: Response) => {
       pageSize: limit,
     };
     res.json(response);
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+// GET: /posts/:postId/favorite
+export const postHaveFavorite = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  try {
+    const pFavorite = await PostFavorite.count({
+      where: { postId: req.params.postId, userId: getUserId(req) },
+    });
+    return res.status(200).json({ hasFavorite: pFavorite > 0 });
   } catch (error) {
     catchErrorToResponse(res, error);
   }

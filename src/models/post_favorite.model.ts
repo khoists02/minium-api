@@ -11,55 +11,52 @@
 
 import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
 import sequelize from "@src/config/database";
-import User from "@src/models/user.model";
+import Post from "./post.model";
 
-type ChannelAttributes = {
+type PostFavoriteAttributes = {
   id: string;
-  name: string;
-  description: string;
-  bannerUrl?: string;
-  deletedAt?: Date | string;
+  postId: string;
   userId: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 };
 
-export type ChannelResponse = Partial<ChannelAttributes>;
+export type PostFavoriteResponse = Partial<PostFavoriteAttributes>;
 
-interface ChannelCreationAttributes extends Optional<ChannelAttributes, "id"> {}
+interface PostFavoriteCreationAttributes
+  extends Optional<PostFavoriteAttributes, "id"> {}
 
-class Channel
-  extends Model<ChannelAttributes, ChannelCreationAttributes>
-  implements ChannelAttributes
+class PostFavorite
+  extends Model<PostFavoriteAttributes, PostFavoriteCreationAttributes>
+  implements PostFavoriteAttributes
 {
   public id!: string;
-  public name!: string;
-  public description!: string;
+  public postId!: string;
   public userId!: string;
-  public bannerUrl?: string;
-  public deletedAt!: Date | string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
 }
 
-Channel.init(
+PostFavorite.init(
   {
     id: { type: DataTypes.UUID, defaultValue: UUIDV4, primaryKey: true },
-    name: { type: DataTypes.TEXT, allowNull: false },
-    description: { type: DataTypes.TEXT, allowNull: false },
+    postId: { type: DataTypes.UUID, allowNull: false, field: "post_id" },
     userId: { type: DataTypes.UUID, allowNull: false, field: "user_id" },
-    bannerUrl: { type: DataTypes.STRING, allowNull: true, field: "banner_url" },
-    deletedAt: { type: DataTypes.DATE, allowNull: true, field: "deleted_at" },
   },
   {
     sequelize,
-    tableName: "channels",
+    tableName: "post_favorite",
     timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["user_id", "post_id"],
+      },
+    ],
   },
 );
 
 // Associations
-Channel.belongsTo(User, { foreignKey: "userId", as: "user" });
-User.hasMany(Channel, { foreignKey: "userId", as: "channel" });
+Post.hasOne(PostFavorite, {
+  foreignKey: "postId",
+  as: "favorite",
+  onDelete: "CASCADE", // Automatically delete PostFavorite when Post is deleted
+});
 
-export default Channel;
+export default PostFavorite;

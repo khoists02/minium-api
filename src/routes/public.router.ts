@@ -20,6 +20,7 @@ import {
   getCountLikes,
   getPublicPost,
   getPublicPostDetails,
+  postHaveFavorite,
 } from "@src/controllers/post.controller";
 import {
   getChannelsAllowed,
@@ -38,6 +39,8 @@ router.put(
   "/public/posts/:postId/comments/:commentId",
   handleLikeOrUnlikeComment,
 );
+router.put("/public/posts/:postId/favorite", postHaveFavorite);
+
 // GET ALL REPLIES OF COMMENT
 
 router.get("/public/comments/:commentId/replies", getAllReplies);

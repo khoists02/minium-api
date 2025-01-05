@@ -13,6 +13,7 @@ import { ChannelLight } from "@src/data/channel";
 import { convertPhotoUrlResponse } from "@src/helpers/convert";
 import Channel from "@src/models/channels.model";
 import Post from "@src/models/post.model";
+import User from "@src/models/user.model";
 import { getUserId } from "@src/utils/authentication";
 import { catchErrorToResponse } from "@src/utils/http";
 import { Request, Response } from "express";
@@ -184,6 +185,7 @@ export const getChannelsDetails = async (req: Request, res: Response) => {
         id: details?.id,
         name: details?.name,
         bannerUrl: finalBannerUrl,
+        userId: details?.userId,
       },
     });
   } catch (error) {

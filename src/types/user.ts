@@ -9,6 +9,8 @@
  * Confidentiality and Non-disclosure agreements explicitly covering such access.
  */
 
+import { ChannelResponse } from "@src/models/channels.model";
+
 export interface IUserResponse {
   id?: string;
   name?: string;
@@ -22,7 +24,15 @@ export interface IPostResponse {
   content?: string;
   description?: string;
   backgroundUrl?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  countLikes?: number;
+  countComments?: number;
   userId?: string;
+  user?: IUserResponse;
+  channel?: ChannelResponse;
+  publishedAt?: Date | string;
+  isFavorite?: boolean;
 }
 
 export interface IPublicPostResponse {
@@ -34,6 +44,7 @@ export interface IPublicPostResponse {
   updatedAt?: Date | string;
   countLikes?: number;
   countComments?: number;
+  isFavorite?: boolean;
 }
 
 export interface ICommentResponse {

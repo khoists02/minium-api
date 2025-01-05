@@ -644,3 +644,37 @@ export const postHaveFavorite = async (
     catchErrorToResponse(res, error);
   }
 };
+
+export const setFavorite = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  try {
+    await PostFavorite.create({
+      postId: req.body.postId,
+      userId: getUserId(req),
+    });
+    return res.status(200).json({ message: "Success" });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+export const unSetFavorite = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  try {
+    const foundFavorite = await PostFavorite.findOne({
+      where: { postId: req.params.postId, userId: getUserId(req) },
+    });
+
+    if (!foundFavorite) return;
+
+    await foundFavorite.destroy();
+
+    return res.status(200).json({ message: "Success" });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};

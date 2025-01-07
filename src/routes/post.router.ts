@@ -16,18 +16,18 @@ import {
   deletePost,
   getAllPost,
   getAllPostByUserId,
-  getAllPostsOfChannels,
   getMyPosts,
   getPostDetails,
   likePost,
   publishPost,
+  suggestedPosts,
   unlikePost,
   updatePost,
   uploadImage,
 } from "@src/controllers/post.controller";
 import { upload } from "@src/middlewares/upload";
 const router = Router();
-
+router.get("/posts/suggested", suggestedPosts);
 router.post("/posts", createPost);
 router.put("/posts/:id", updatePost);
 router.get("/posts/:postId", getPostDetails);

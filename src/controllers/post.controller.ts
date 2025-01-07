@@ -23,7 +23,7 @@ import { getUserId } from "@src/utils/authentication";
 import { convertToUserResponse } from "@src/utils/convert";
 import { catchErrorToResponse } from "@src/utils/http";
 import { Request, Response } from "express";
-import { Op } from "sequelize";
+import { json, Op } from "sequelize";
 
 /**
  * Get all post based on for authenticated user
@@ -77,7 +77,7 @@ export const getMyPosts = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
       content: allPost.map((u) => {
-        return convertToPostResponse(req, u);
+        return convertToPostResponse(req, u, ["content"]);
       }),
       totalItems,
       totalPages,
@@ -298,7 +298,7 @@ export const getAllPost = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
       content: allPost.map((u) => {
-        return convertToPostResponse(req, u);
+        return convertToPostResponse(req, u, ["content"]);
       }),
       totalItems,
       totalPages,
@@ -334,7 +334,7 @@ export const getPostDetails = async (req: Request, res: Response) => {
       ],
     });
     res.status(200).json({
-      post: convertToPostResponse(req, foundPost as Post),
+      post: convertToPostResponse(req, foundPost as Post, ["content"]),
     });
   } catch (error) {
     catchErrorToResponse(res, error);
@@ -394,7 +394,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
       content: allPost.map((u) => {
-        return convertToPostResponse(req, u);
+        return convertToPostResponse(req, u, ["content"]);
       }),
       totalItems,
       totalPages,
@@ -416,6 +416,7 @@ export const getAllPostByUserId = async (req: Request, res: Response) => {
 const convertToPostResponse = (
   req: Request,
   foundPost: Post,
+  excluded: string[],
 ): IPostResponse => {
   // @ts-ignore
   const userResponse = convertToUserResponse(req, foundPost["user"] as User);
@@ -443,6 +444,11 @@ const convertToPostResponse = (
     // @ts-ignore
     isFavorite: !!foundPost["favorite"],
   };
+
+  for (let exclude of excluded) {
+    // @ts-ignore
+    delete response[exclude];
+  }
   return response;
 };
 
@@ -493,7 +499,7 @@ export const getPublicPost = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPublicPostResponse[]> = {
       content: allPost.map((u) => {
-        return convertToPostResponse(req, u);
+        return convertToPostResponse(req, u, ["content"]);
       }),
       totalItems,
       totalPages,
@@ -531,7 +537,7 @@ export const getPublicPostDetails = async (req: Request, res: Response) => {
     });
 
     res.status(200).json({
-      post: convertToPostResponse(req, foundPost as Post),
+      post: convertToPostResponse(req, foundPost as Post, []),
     });
   } catch (error) {
     catchErrorToResponse(res, error);
@@ -617,7 +623,7 @@ export const getAllPostsOfChannels = async (req: Request, res: Response) => {
     // Prepare paginated response
     const response: PaginatedResponse<IPostResponse[]> = {
       content: allPost.map((u) => {
-        return convertToPostResponse(req, u);
+        return convertToPostResponse(req, u, ["content"]);
       }),
       totalItems,
       totalPages,
@@ -631,7 +637,7 @@ export const getAllPostsOfChannels = async (req: Request, res: Response) => {
 };
 
 // GET: /posts/:postId/favorite
-export const postHaveFavorite = async (
+export const postAsFavorite = async (
   req: Request,
   res: Response,
 ): Promise<any> => {
@@ -645,7 +651,13 @@ export const postHaveFavorite = async (
   }
 };
 
-export const setFavorite = async (
+/**
+ * Favorite API
+ * @param req
+ * @param res
+ * @returns
+ */
+export const markPostAsFavorite = async (
   req: Request,
   res: Response,
 ): Promise<any> => {
@@ -660,7 +672,7 @@ export const setFavorite = async (
   }
 };
 
-export const unSetFavorite = async (
+export const unMarkPostAsFavorite = async (
   req: Request,
   res: Response,
 ): Promise<any> => {
@@ -674,6 +686,44 @@ export const unSetFavorite = async (
     await foundFavorite.destroy();
 
     return res.status(200).json({ message: "Success" });
+  } catch (error) {
+    catchErrorToResponse(res, error);
+  }
+};
+
+export const suggestedPosts = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  try {
+    const posts = await Post.findAll({
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "email", "description", "photoUrl"],
+        },
+        {
+          model: Channel,
+          as: "channel",
+          attributes: ["id", "name", "description", "bannerUrl"],
+        },
+        {
+          model: PostFavorite,
+          as: "favorite",
+          attributes: ["id"],
+        },
+      ],
+      order: [
+        ["countLikes", "DESC"],
+        ["countComments", "DESC"],
+      ],
+      limit: 10,
+    });
+
+    return res.status(200).json({
+      content: posts.map((p) => convertToPostResponse(req, p, ["content"])),
+    });
   } catch (error) {
     catchErrorToResponse(res, error);
   }
